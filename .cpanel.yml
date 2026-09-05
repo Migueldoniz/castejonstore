@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/caste3874526/staging.castejonstore.com.br/wp-content/themes/castejon-theme/
+    - /bin/cp -R * $DEPLOYPATH
