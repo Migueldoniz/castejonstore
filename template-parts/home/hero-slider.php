@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$upload_url = content_url('/uploads');
+$upload_url = get_template_directory_uri() . '/assets/images';
 
 $slides = array(
     array(
