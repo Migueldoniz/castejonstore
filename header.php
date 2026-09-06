@@ -23,10 +23,15 @@ if (!defined('ABSPATH')) {
     <div class="cj-container">
         <!-- Topo Principal (Busca | Logo | Ações) -->
         <div class="cj-header-top">
-            <!-- Mobile Toggle -->
-            <button class="cj-mobile-btn cj-mobile-toggle" aria-label="Abrir Menu">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            </button>
+            <!-- Mobile Actions (Left) -->
+            <div class="cj-mobile-left-actions">
+                <button class="cj-mobile-btn cj-mobile-toggle" aria-label="Abrir Menu">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+                <button class="cj-mobile-btn cj-mobile-search-toggle" aria-label="Abrir Busca">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+            </div>
 
             <!-- 1. Campo de Busca (Esquerda) -->
             <div class="cj-search-container">

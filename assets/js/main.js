@@ -97,16 +97,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 3. Mobile Menu Drawer
-  const mobileToggle = document.querySelector('.cj-mobile-toggle');
+  const mobileToggles = document.querySelectorAll('.cj-mobile-toggle, .cj-mobile-search-toggle');
   const mobileNav = document.querySelector('.cj-mobile-nav');
   const mobileBackdrop = document.querySelector('.cj-mobile-backdrop');
   const mobileClose = document.querySelector('.cj-mobile-close');
 
-  const openMobileMenu = () => {
+  const openMobileMenu = (e) => {
     if (mobileNav && mobileBackdrop) {
       mobileNav.classList.add('is-active');
       mobileBackdrop.classList.add('is-active');
       document.body.style.overflow = 'hidden';
+
+      if (e && e.currentTarget && e.currentTarget.classList.contains('cj-mobile-search-toggle')) {
+        setTimeout(() => {
+          const searchInput = mobileNav.querySelector('input[type="search"]');
+          if (searchInput) searchInput.focus();
+        }, 300);
+      }
     }
   };
 
@@ -118,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  if (mobileToggle) mobileToggle.addEventListener('click', openMobileMenu);
+  if (mobileToggles.length) mobileToggles.forEach(btn => btn.addEventListener('click', openMobileMenu));
   if (mobileClose) mobileClose.addEventListener('click', closeMobileMenu);
   if (mobileBackdrop) mobileBackdrop.addEventListener('click', closeMobileMenu);
 

@@ -344,6 +344,9 @@ img {
   font-size: 1.5rem;
   cursor: pointer;
 }
+.cj-mobile-left-actions {
+  display: none;
+}
 
 @media (max-width: 991px) {
   .cj-header-top {
@@ -352,9 +355,14 @@ img {
     align-items: center;
     padding: 6px 0;
   }
+  .cj-mobile-left-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    justify-self: start;
+  }
   .cj-mobile-btn {
     display: block;
-    justify-self: start;
   }
   .cj-search-container,
   .cj-user-account-text,
