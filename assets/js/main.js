@@ -263,8 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const observer = new IntersectionObserver((entries, obs) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
+          entry.target.classList.add('is-revealed');
           obs.unobserve(entry.target);
         }
       });
@@ -272,9 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const animatedCards = document.querySelectorAll('.cj-product-card, .cj-category-card, .cj-benefit-card, .cj-decant-card');
     animatedCards.forEach((el, index) => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(16px)';
-      el.style.transition = `opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1) ${(index % 4) * 0.06}s, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) ${(index % 4) * 0.06}s`;
+      el.style.transitionDelay = `${(index % 4) * 0.06}s`;
       observer.observe(el);
     });
   }
