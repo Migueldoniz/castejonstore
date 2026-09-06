@@ -14,8 +14,6 @@ if (!defined('ABSPATH')) {
     <!-- Preload do 1º Slide para LCP mais rápido -->
     <link rel="preload" as="image" href="<?php echo esc_url(get_template_directory_uri() . '/assets/images/banners/slide-1-mobile.webp'); ?>" media="(max-width: 767px)">
     <link rel="preload" as="image" href="<?php echo esc_url(get_template_directory_uri() . '/assets/images/banners/slide-1-desktop.webp'); ?>" media="(min-width: 768px)">
-    
-    <script>document.documentElement.classList.add('js-enabled');</script>
 
     <?php wp_head(); ?>
 </head>
