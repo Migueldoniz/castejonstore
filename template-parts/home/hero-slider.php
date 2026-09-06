@@ -12,22 +12,22 @@ $upload_url = get_template_directory_uri() . '/assets/images';
 $slides = array(
     array(
         'title'          => 'Fragrâncias Icônicas - Bleu de Chanel & La Vie Est Belle',
-        'image_desktop'  => $upload_url . '/banners/slide-1-desktop.png',
-        'image_mobile'   => $upload_url . '/banners/slide-1-mobile.png',
+        'image_desktop'  => $upload_url . '/banners/slide-1-desktop.webp',
+        'image_mobile'   => $upload_url . '/banners/slide-1-mobile.webp',
         'link'           => home_url('/categoria-produto/perfumes/'),
         'alt'            => 'Fragrâncias Icônicas - Bleu de Chanel e La Vie Est Belle - Castejon Store',
     ),
     array(
         'title'          => 'Perfumes Árabes & Decants - Lattafa Yara e Asad',
-        'image_desktop'  => $upload_url . '/banners/slide-2-desktop.png',
-        'image_mobile'   => $upload_url . '/banners/slide-2-mobile.png',
+        'image_desktop'  => $upload_url . '/banners/slide-2-desktop.webp',
+        'image_mobile'   => $upload_url . '/banners/slide-2-mobile.webp',
         'link'           => home_url('/categoria-produto/decants-2/'),
         'alt'            => 'Perfumes Árabes e Decants - Lattafa Yara e Asad - Castejon Store',
     ),
     array(
         'title'          => 'Perfume que Marca, Presença que Encanta',
-        'image_desktop'  => $upload_url . '/banners/slide-3-desktop.png',
-        'image_mobile'   => $upload_url . '/banners/slide-3-mobile.png',
+        'image_desktop'  => $upload_url . '/banners/slide-3-desktop.webp',
+        'image_mobile'   => $upload_url . '/banners/slide-3-mobile.webp',
         'link'           => home_url('/loja/'),
         'alt'            => 'Perfume que Marca, Presença que Encanta - Castejon Store',
     ),
