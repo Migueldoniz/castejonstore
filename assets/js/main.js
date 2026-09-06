@@ -258,7 +258,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 6. Observer de Reveal Suave (Removido para evitar conflitos de cache/JS delay)
+  // 6. Observer de Reveal Suave
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+
+    const animatedCards = document.querySelectorAll('.cj-product-card, .cj-category-card, .cj-benefit-card, .cj-decant-card');
+    animatedCards.forEach((el, index) => {
+      el.style.transitionDelay = `${(index % 4) * 0.06}s`;
+      observer.observe(el);
+    });
+  }
 
   // 7. Slider de Imagens da Home (Vanilla, Autoplay, Touch & Dots)
   const homeSlider = document.getElementById('cjHomeSlider');
