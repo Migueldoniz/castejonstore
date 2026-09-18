@@ -5230,6 +5230,32 @@ p.woocommerce-noreviews::after {
   text-shadow: 0 1px 8px rgba(0, 1, 40, 0.45);
 }
 
+/* Telas >=1440px: zona do texto mais larga (menos borda vazia) e texto maior */
+@media (min-width: 1440px) {
+  .cj-hero-copy {
+    max-width: min(1720px, calc(100vw - 100px));
+    margin-left: 50px;
+    margin-right: auto;
+  }
+
+  .cj-hero-copy-inner {
+    max-width: 720px;
+    min-height: 470px;
+  }
+
+  .cj-hero-kicker {
+    font-size: 0.9rem;
+  }
+
+  .cj-hero-h1 {
+    font-size: clamp(3rem, 3.6vw, 4rem);
+  }
+
+  .cj-hero-sub {
+    font-size: 1.15rem;
+  }
+}
+
 .cj-hero-ctas {
   display: flex;
   gap: 12px;
