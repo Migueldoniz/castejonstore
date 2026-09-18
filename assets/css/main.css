@@ -5413,6 +5413,16 @@ body {
   font-size: 0.8125rem;
 }
 
+@media (max-width: 575px) {
+  #cj-announcement-bar {
+    min-height: 36px;
+  }
+
+  .cj-announcement-item {
+    font-size: 0.72rem;
+  }
+}
+
 .cj-announcement-arrow {
   min-width: 40px;
   min-height: 40px;
