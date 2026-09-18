@@ -5234,13 +5234,13 @@ p.woocommerce-noreviews::after {
 @media (min-width: 1440px) {
   .cj-hero-copy {
     max-width: min(1720px, calc(100vw - 100px));
-    margin-left: 90px;
+    margin-left: 125px;
     margin-right: auto;
   }
 
   .cj-hero-copy-inner {
     max-width: 720px;
-    min-height: 470px;
+    min-height: 500px;
   }
 
   .cj-hero-kicker {
