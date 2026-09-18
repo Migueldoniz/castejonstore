@@ -5421,6 +5421,25 @@ body {
   .cj-announcement-item {
     font-size: 0.72rem;
   }
+
+  .cj-ann-text-full {
+    display: none;
+  }
+
+  .cj-ann-text-mobile {
+    display: inline;
+  }
+}
+
+.cj-ann-text-mobile {
+  display: none;
+}
+
+/* Segurança: se ainda sobrar texto, corta com reticências */
+.cj-announcement-link,
+.cj-announcement-item {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .cj-announcement-arrow {

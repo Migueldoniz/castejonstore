@@ -16,20 +16,24 @@ if (!defined('ABSPATH')) {
                 <div class="cj-announcement-item is-active">
                     <a href="<?php echo esc_url(home_url('/categoria-produto/kits/')); ?>" class="cj-announcement-link">
                         <span class="cj-announcement-icon">🎁</span>
-                        KITS DE DEGUSTAÇÃO A PARTIR DE <strong>R$110</strong> — SELEÇÕES TEMÁTICAS
+                        <span class="cj-ann-text-full">KITS DE DEGUSTAÇÃO A PARTIR DE <strong>R$110</strong> — SELEÇÕES TEMÁTICAS</span>
+                        <span class="cj-ann-text-mobile">KITS A PARTIR DE <strong>R$110</strong></span>
                     </a>
                 </div>
                 <div class="cj-announcement-item">
                     <span class="cj-announcement-icon">💳</span>
-                    PARCELE SUAS COMPRAS EM ATÉ <strong>12X NO CARTÃO</strong>
+                    <span class="cj-ann-text-full">PARCELE SUAS COMPRAS EM ATÉ <strong>12X NO CARTÃO</strong></span>
+                    <span class="cj-ann-text-mobile">ATÉ <strong>12X NO CARTÃO</strong></span>
                 </div>
                 <div class="cj-announcement-item">
                     <span class="cj-announcement-icon">💎</span>
-                    PERFUMES <strong>100% ORIGINAIS</strong> E DECANTS EXCLUSIVOS
+                    <span class="cj-ann-text-full">PERFUMES <strong>100% ORIGINAIS</strong> E DECANTS EXCLUSIVOS</span>
+                    <span class="cj-ann-text-mobile">PERFUMES <strong>100% ORIGINAIS</strong></span>
                 </div>
                 <div class="cj-announcement-item">
                     <span class="cj-announcement-icon">⚡</span>
-                    DESPACHO ÁGIL COM <strong>CÓDIGO DE RASTREIO</strong> GARANTIDO
+                    <span class="cj-ann-text-full">DESPACHO ÁGIL COM <strong>CÓDIGO DE RASTREIO</strong> GARANTIDO</span>
+                    <span class="cj-ann-text-mobile">DESPACHO ÁGIL COM RASTREIO</span>
                 </div>
             </div>
             <button type="button" class="cj-announcement-arrow cj-next" aria-label="Próxima mensagem">
