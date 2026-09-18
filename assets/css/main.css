@@ -5413,6 +5413,10 @@ body {
   font-size: 0.8125rem;
 }
 
+.cj-ann-text-mobile {
+  display: none;
+}
+
 @media (max-width: 575px) {
   #cj-announcement-bar {
     min-height: 36px;
@@ -5429,10 +5433,6 @@ body {
   .cj-ann-text-mobile {
     display: inline;
   }
-}
-
-.cj-ann-text-mobile {
-  display: none;
 }
 
 /* Segurança: se ainda sobrar texto, corta com reticências */
