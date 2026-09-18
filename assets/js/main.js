@@ -723,6 +723,20 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!w) return;
       const first = Math.round(slides[0].getBoundingClientRect().width);
       if (first > 0 && first < w * 0.6) {
+        // Corrige min-width inline errado que o plugin aplica no wrapper
+        const wvgWrap = wrap.querySelector('.woo-variation-gallery-wrapper');
+        if (wvgWrap) {
+          wvgWrap.style.minWidth = '100%';
+        }
+        const wvgOuter = wrap.querySelector('.woo-variation-product-gallery');
+        if (wvgOuter) {
+          wvgOuter.style.width = '100%';
+          wvgOuter.style.display = 'block';
+        }
+        const sliderWrap = wrap.querySelector('.woo-variation-gallery-slider-wrapper');
+        if (sliderWrap) {
+          sliderWrap.style.width = '100%';
+        }
         slides.forEach((s) => { s.style.width = w + 'px'; });
         track.style.width = (w * slides.length) + 'px';
         const list = wrap.querySelector('.slick-list');
