@@ -744,18 +744,42 @@ document.addEventListener('DOMContentLoaded', () => {
           list.style.width = '100%';
           list.style.height = 'auto';
         }
-        window.dispatchEvent(new Event('resize'));
+        // Recalcula o slick pela DOM corrigida (sem disparar resize global,
+        // que faria o plugin reaplicar as medidas erradas)
+        if (window.jQuery) {
+          window.jQuery(wrap).find('.slick-initialized').each(function () {
+            try { window.jQuery(this).slick('setPosition'); } catch (e) { /* ignore */ }
+          });
+        }
       }
     });
   };
+
+  const cjWatchGallery = () => {
+    document.querySelectorAll('.cj-gallery-wrapper').forEach((wrap) => {
+      if (wrap.dataset.cjGalleryWatch) return;
+      wrap.dataset.cjGalleryWatch = '1';
+      if ('MutationObserver' in window) {
+        new MutationObserver(() => cjFixGalleryWidth())
+          .observe(wrap, { attributes: true, subtree: true, attributeFilter: ['style'] });
+      }
+    });
+  };
+
+  const cjGalleryBoot = () => {
+    cjWatchGallery();
+    cjFixGalleryWidth();
+  };
   if (document.readyState === 'complete') {
-    setTimeout(cjFixGalleryWidth, 1200);
+    setTimeout(cjGalleryBoot, 1200);
   } else {
-    window.addEventListener('load', () => setTimeout(cjFixGalleryWidth, 1200));
+    window.addEventListener('load', () => setTimeout(cjGalleryBoot, 1200));
   }
-  window.addEventListener('load', () => setTimeout(cjFixGalleryWidth, 3000));
+  window.addEventListener('load', () => setTimeout(cjGalleryBoot, 3000));
+  window.addEventListener('load', () => setTimeout(cjGalleryBoot, 6000));
+  window.addEventListener('resize', () => cjFixGalleryWidth());
   document.addEventListener('change', (e) => {
-    if (e.target.closest('.variations_form')) setTimeout(cjFixGalleryWidth, 400);
+    if (e.target.closest('.variations_form')) setTimeout(() => { cjWatchGallery(); cjFixGalleryWidth(); }, 400);
   });
 });
 
