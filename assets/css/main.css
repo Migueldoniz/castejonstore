@@ -5168,6 +5168,14 @@ p.woocommerce-noreviews::after {
   padding: 28px 0 108px;
 }
 
+/* Desktop largo: altura fixa do bloco para o texto ficar na mesma posição
+   em todos os slides (H1s têm tamanhos diferentes) */
+@media (min-width: 1214px) {
+  .cj-hero-copy-inner {
+    min-height: 420px;
+  }
+}
+
 .cj-hero-kicker {
   position: relative;
   display: inline-block;
