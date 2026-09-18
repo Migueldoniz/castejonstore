@@ -31,8 +31,25 @@ $pix_price = $price ? ($price * 0.95) : false;
 // Avaliações
 $rating_count = $product->get_rating_count();
 $average      = $product->get_average_rating();
+
+// Dados para tracking gtm4wp (view_item_list / select_item)
+$cj_cat_terms = wp_get_post_terms($product_id, 'product_cat', array('fields' => 'names'));
+$cj_gtm4wp_data = array(
+    'internal_id'              => $product_id,
+    'item_id'                  => $product->get_sku() ? $product->get_sku() : $product_id,
+    'item_name'                => $title,
+    'sku'                      => $product->get_sku() ? $product->get_sku() : $product_id,
+    'price'                    => round((float) wc_get_price_to_display($product), 2),
+    'stocklevel'               => $product->get_stock_quantity(),
+    'stockstatus'              => $product->get_stock_status(),
+    'google_business_vertical' => 'retail',
+    'item_category'            => !empty($cj_cat_terms) ? $cj_cat_terms[0] : '',
+    'product_type'             => $product->get_type(),
+    'productlink'              => $permalink,
+);
 ?>
-<div class="cj-product-card <?php echo $secondary_img_id ? 'has-secondary-img' : ''; ?>">
+<div class="cj-product-card product <?php echo $secondary_img_id ? 'has-secondary-img' : ''; ?>">
+    <span class="gtm4wp_productdata" style="display:none; visibility:hidden;" data-gtm4wp_product_data="<?php echo esc_attr(wp_json_encode($cj_gtm4wp_data)); ?>"></span>
     <div class="cj-card-thumb">
         <div class="cj-card-badges-wrapper">
             <?php if ($is_decant) : ?>
@@ -80,9 +97,17 @@ $average      = $product->get_average_rating();
             <div class="cj-card-rating">
                 <?php if ($rating_count > 0) : ?>
                     <?php echo wc_get_rating_html($average, $rating_count); ?>
-                <?php else : ?>
-                    <span class="cj-rating-stars">★★★★★</span>
-                <?php endif; ?>
+                <?php else :
+                    $cj_card_reviews = get_option('trustindex-google-page-details');
+                    $cj_card_reviews_url = (is_array($cj_card_reviews) && !empty($cj_card_reviews['review_url'])) ? $cj_card_reviews['review_url'] : '';
+                    if ($cj_card_reviews_url) : ?>
+                        <a href="<?php echo esc_url($cj_card_reviews_url); ?>" class="cj-rating-google" target="_blank" rel="noopener" title="Avaliações verificadas no Google">
+                            <span class="cj-rating-google-stars" aria-hidden="true">★★★★★</span> no Google
+                        </a>
+                    <?php else : ?>
+                        <span class="cj-rating-none">Autenticidade garantida</span>
+                    <?php endif;
+                endif; ?>
             </div>
         </div>
 
@@ -116,12 +141,26 @@ $average      = $product->get_average_rating();
         </div>
 
             <?php
-            $btn_text = $product->is_type('variable') ? 'ESCOLHER TAMANHO' : 'COMPRAR';
+            if ($product->is_in_stock()) :
+                $is_variable = $product->is_type('variable');
+                $btn_text = $is_variable ? 'ESCOLHER TAMANHO' : 'COMPRAR';
+                $btn_href = $is_variable ? $permalink : esc_url('?add-to-cart=' . $product_id);
+                $btn_classes = 'cj-buy-btn' . (!$is_variable ? ' ajax_add_to_cart add_to_cart_button' : '');
             ?>
-            <a href="<?php echo esc_url($permalink); ?>" class="cj-buy-btn">
-                <span><?php echo esc_html($btn_text); ?></span>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-            </a>
+            <div class="cj-card-actions">
+                <a href="<?php echo $btn_href; ?>" class="<?php echo esc_attr($btn_classes); ?>" data-product_id="<?php echo esc_attr($product_id); ?>" data-product_sku="<?php echo esc_attr($product->get_sku()); ?>" aria-label="<?php echo esc_attr($btn_text . ' - ' . $title); ?>">
+                    <span><?php echo esc_html($btn_text); ?></span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                </a>
+                <button type="button" class="cj-quickshop-btn" data-product-id="<?php echo esc_attr($product_id); ?>" aria-label="Compra rápida" title="Compra rápida">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+            </div>
+            <?php else : ?>
+            <span class="cj-buy-btn cj-btn-soldout" aria-disabled="true">
+                <span>ESGOTADO</span>
+            </span>
+            <?php endif; ?>
         </div>
     </div>
 

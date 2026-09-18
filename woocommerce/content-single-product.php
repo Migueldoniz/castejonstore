@@ -92,6 +92,23 @@ $is_decant = has_term('decants-2', 'product_cat', $product_id) || has_term('deca
                     ?>
                 </div>
 
+                <?php
+                // Nota de frete grátis no PDP (acima de R$299)
+                $cj_pdp_price = $product->get_price();
+                if ($cj_pdp_price) :
+                    $cj_remaining = 299.00 - (float) $cj_pdp_price;
+                    ?>
+                    <div class="cj-pdp-freeship">
+                        <?php if ($cj_remaining <= 0) : ?>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span><strong>Frete grátis</strong> para todo o Brasil neste produto</span>
+                        <?php else : ?>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7 7 .6-5.2 4.7 1.5 6.9L12 17.7 5.7 21.2l1.5-6.9L2 9.6 9 9z"/></svg>
+                            <span>Faltam <strong><?php echo wc_price($cj_remaining); ?></strong> para ganhar <strong>FRETE GRÁTIS</strong> para todo o Brasil</span>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+
                 <?php if ($is_decant) : ?>
                     <!-- Selo e Explicação de Decant Autêntico (Estilo The Greg's) -->
                     <div class="cj-decant-info-banner">
@@ -106,6 +123,7 @@ $is_decant = has_term('decants-2', 'product_cat', $product_id) || has_term('deca
                 <?php endif; ?>
 
                 <!-- Formulário de Compra / Seleção de Variações -->
+                <?php if ($product->is_in_stock()) : ?>
                 <div class="cj-single-form-wrapper">
                     <?php
                     /**
@@ -116,6 +134,43 @@ $is_decant = has_term('decants-2', 'product_cat', $product_id) || has_term('deca
                     woocommerce_template_single_add_to_cart();
                     ?>
                 </div>
+                <?php else : ?>
+                <div class="cj-single-form-wrapper cj-soldout-wrapper">
+                    <span class="cj-buy-btn cj-btn-soldout" aria-disabled="true">ESGOTADO</span>
+                    <p class="cj-soldout-note">Este produto está temporariamente esgotado. As reposições são anunciadas no Instagram e na newsletter.</p>
+                </div>
+                <?php endif; ?>
+
+                <?php
+                // Cross-sell decant <-> frasco (par por fragrância)
+                $cj_pair_slug = '';
+                $cj_pair_direction = '';
+                if (strpos($product->get_slug(), 'perfume-') === 0) {
+                    $cj_pair_slug = 'decant-' . substr($product->get_slug(), strlen('perfume-'));
+                    $cj_pair_direction = 'to_decant';
+                } elseif (strpos($product->get_slug(), 'decant-') === 0) {
+                    $cj_pair_slug = 'perfume-' . substr($product->get_slug(), strlen('decant-'));
+                    $cj_pair_direction = 'to_perfume';
+                }
+                $cj_pair_post = $cj_pair_slug ? get_page_by_path($cj_pair_slug, OBJECT, 'product') : null;
+                if (!empty($cj_pair_post)) {
+                    $cj_pair_product = wc_get_product($cj_pair_post->ID);
+                    if ($cj_pair_product && $cj_pair_product->is_visible()) :
+                ?>
+                    <div class="cj-pair-box">
+                        <div class="cj-pair-info">
+                            <span class="cj-pair-tag"><?php echo $cj_pair_direction === 'to_decant' ? 'Teste antes de comprar' : 'Leve o frasco lacrado'; ?></span>
+                            <strong class="cj-pair-name"><?php echo esc_html($cj_pair_product->get_name()); ?></strong>
+                            <span class="cj-pair-price"><?php echo wp_kses_post($cj_pair_product->get_price_html()); ?></span>
+                        </div>
+                        <a href="<?php echo esc_url($cj_pair_product->get_permalink()); ?>" class="cj-btn-gold cj-pair-cta">
+                            <?php echo $cj_pair_direction === 'to_decant' ? 'Conhecer o decant' : 'Ver frasco original'; ?>
+                        </a>
+                    </div>
+                <?php
+                    endif;
+                }
+                ?>
 
                 <!-- Selos de Confiança e Garantia (Estilo The Gregs) -->
                 <div class="cj-product-guarantees">
@@ -132,6 +187,23 @@ $is_decant = has_term('decants-2', 'product_cat', $product_id) || has_term('deca
                         <span>Até 12x no cartão de crédito ou à vista via PIX</span>
                     </div>
                 </div>
+
+                <?php
+                $cj_pdp_page_details = get_option('trustindex-google-page-details');
+                $cj_pdp_review_url = (is_array($cj_pdp_page_details) && !empty($cj_pdp_page_details['review_url'])) ? $cj_pdp_page_details['review_url'] : '';
+                if ($cj_pdp_review_url) :
+                ?>
+                <a href="<?php echo esc_url($cj_pdp_review_url); ?>" class="cj-pdp-google-badge" target="_blank" rel="noopener">
+                    <span class="cj-hero-stars" aria-hidden="true">
+                        <svg width="13" height="13" viewBox="0 0 16 15" fill="currentColor"><path d="M8 0l2.1 5.4 5.9.2-4.6 3.8 1.5 5.7L8 11.2l-4.9 3.9 1.5-5.7L0 5.6l5.9-.2z"/></svg>
+                        <svg width="13" height="13" viewBox="0 0 16 15" fill="currentColor"><path d="M8 0l2.1 5.4 5.9.2-4.6 3.8 1.5 5.7L8 11.2l-4.9 3.9 1.5-5.7L0 5.6l5.9-.2z"/></svg>
+                        <svg width="13" height="13" viewBox="0 0 16 15" fill="currentColor"><path d="M8 0l2.1 5.4 5.9.2-4.6 3.8 1.5 5.7L8 11.2l-4.9 3.9 1.5-5.7L0 5.6l5.9-.2z"/></svg>
+                        <svg width="13" height="13" viewBox="0 0 16 15" fill="currentColor"><path d="M8 0l2.1 5.4 5.9.2-4.6 3.8 1.5 5.7L8 11.2l-4.9 3.9 1.5-5.7L0 5.6l5.9-.2z"/></svg>
+                        <svg width="13" height="13" viewBox="0 0 16 15" fill="currentColor"><path d="M8 0l2.1 5.4 5.9.2-4.6 3.8 1.5 5.7L8 11.2l-4.9 3.9 1.5-5.7L0 5.6l5.9-.2z"/></svg>
+                    </span>
+                    <span><strong>Avaliações verificadas</strong> no Google — quem compra, recomenda</span>
+                </a>
+                <?php endif; ?>
 
                 <!-- Metadados (SKU, etc.) -->
                 <div class="cj-single-meta">

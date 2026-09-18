@@ -50,6 +50,7 @@ add_filter('woocommerce_add_to_cart_fragments', 'castejon_woocommerce_header_add
 add_action('wp_ajax_castejon_update_cart_drawer_qty', 'castejon_update_cart_drawer_qty');
 add_action('wp_ajax_nopriv_castejon_update_cart_drawer_qty', 'castejon_update_cart_drawer_qty');
 function castejon_update_cart_drawer_qty() {
+    check_ajax_referer('castejon_ajax_nonce', 'nonce');
     $cart_item_key = isset($_POST['cart_item_key']) ? sanitize_text_field($_POST['cart_item_key']) : '';
     $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
 
@@ -68,6 +69,7 @@ function castejon_update_cart_drawer_qty() {
 add_action('wp_ajax_castejon_remove_cart_drawer_item', 'castejon_remove_cart_drawer_item');
 add_action('wp_ajax_nopriv_castejon_remove_cart_drawer_item', 'castejon_remove_cart_drawer_item');
 function castejon_remove_cart_drawer_item() {
+    check_ajax_referer('castejon_ajax_nonce', 'nonce');
     $cart_item_key = isset($_POST['cart_item_key']) ? sanitize_text_field($_POST['cart_item_key']) : '';
 
     if ($cart_item_key && WC()->cart->get_cart_item($cart_item_key)) {
@@ -78,11 +80,87 @@ function castejon_remove_cart_drawer_item() {
 }
 
 
+// AJAX: Sugestões de busca (autocomplete de produtos)
+add_action('wp_ajax_castejon_search_suggest', 'castejon_search_suggest');
+add_action('wp_ajax_nopriv_castejon_search_suggest', 'castejon_search_suggest');
+function castejon_search_suggest() {
+    check_ajax_referer('castejon_ajax_nonce', 'nonce');
+    $term = isset($_POST['term']) ? sanitize_text_field($_POST['term']) : '';
+    if (strlen($term) < 2) {
+        wp_send_json(array());
+    }
+
+    $query = new WP_Query(array(
+        'post_type'      => 'product',
+        'post_status'    => 'publish',
+        's'              => $term,
+        'posts_per_page' => 8,
+        'no_found_rows'  => true,
+    ));
+
+    $items = array();
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $product = wc_get_product(get_the_ID());
+            if (!$product) {
+                continue;
+            }
+            $img_id = $product->get_image_id();
+            $items[] = array(
+                'title' => $product->get_name(),
+                'url'   => $product->get_permalink(),
+                'img'   => $img_id ? wp_get_attachment_image_url($img_id, 'woocommerce_thumbnail') : wc_placeholder_img_src(),
+                'price' => wp_strip_all_tags($product->get_price_html()),
+            );
+        }
+        wp_reset_postdata();
+    }
+
+    wp_send_json($items);
+}
+
+// AJAX: Quickshop (formulário de compra em modal)
+add_action('wp_ajax_castejon_quickshop', 'castejon_quickshop_form');
+add_action('wp_ajax_nopriv_castejon_quickshop', 'castejon_quickshop_form');
+function castejon_quickshop_form() {
+    check_ajax_referer('castejon_ajax_nonce', 'nonce');
+    $id      = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
+    $product = $id ? wc_get_product($id) : false;
+
+    if (!$product || !$product->is_visible()) {
+        wp_send_json_error(array('message' => 'Produto não encontrado.'));
+    }
+
+    ob_start();
+    echo '<div class="cj-quickshop-grid">';
+    echo '<div class="cj-quickshop-media">' . $product->get_image('woocommerce_single') . '</div>';
+    echo '<div class="cj-quickshop-info">';
+    echo '<h3 class="cj-quickshop-title">' . esc_html($product->get_name()) . '</h3>';
+    echo '<div class="cj-quickshop-price">' . wp_kses_post($product->get_price_html()) . '</div>';
+
+    if ($product->is_in_stock()) {
+        $GLOBALS['product'] = $product;
+        if ($product->is_type('variable')) {
+            woocommerce_variable_add_to_cart();
+        } elseif ($product->is_type('simple')) {
+            woocommerce_simple_add_to_cart();
+        } else {
+            echo '<a class="cj-btn-gold" href="' . esc_url($product->get_permalink()) . '">Ver produto</a>';
+        }
+    } else {
+        echo '<span class="cj-buy-btn cj-btn-soldout">ESGOTADO</span>';
+    }
+    echo '</div></div>';
+
+    wp_send_json_success(array('html' => ob_get_clean()));
+}
+
 // Desabilitar breadcrumbs padrões na página de arquivo para usarmos nossos próprios elementos
 remove_action('woocommerce_before_main_content', 'woocommerce_breadcrumb', 20);
 
 // Helper para obter parcelamento formatado
-function castejon_get_installment_text($price, $max_installments = 6) {
+function castejon_get_installment_text($price, $max_installments = 12) {
     if (empty($price) || !is_numeric($price) || $price <= 0) {
         return '';
     }
@@ -156,6 +234,38 @@ function castejon_sort_get_terms_natural_volume($terms, $taxonomies, $args, $ter
         }
     }
     return $terms;
+}
+
+// Estoque primeiro em loja/categorias (exceto busca direcionada):
+// _stock_status alfabético ASC = instock > onbackorder > outofstock.
+// O critério escolhido pelo usuário (preço, popularidade, data...) vira chave secundária.
+add_action('woocommerce_product_query', 'castejon_stock_first_archives', 20);
+function castejon_stock_first_archives($q) {
+    if (is_admin() || is_search()) {
+        return;
+    }
+
+    $orderby = $q->get('orderby');
+    $order   = $q->get('order') ?: 'ASC';
+
+    $meta_query = $q->get('meta_query');
+    if (!is_array($meta_query)) {
+        $meta_query = array();
+    }
+    $meta_query['stock_status_clause'] = array(
+        'key'     => '_stock_status',
+        'compare' => 'IN',
+        'value'   => array('instock', 'onbackorder', 'outofstock'),
+    );
+    $q->set('meta_query', $meta_query);
+
+    $new_orderby = array('stock_status_clause' => 'ASC');
+    if (!empty($orderby)) {
+        $new_orderby[$orderby] = $order;
+    } else {
+        $new_orderby['menu_order'] = $order;
+    }
+    $q->set('orderby', $new_orderby);
 }
 
 

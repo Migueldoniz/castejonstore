@@ -88,9 +88,46 @@ if (!defined('ABSPATH')) {
                     </a>
                     <ul class="cj-dropdown-menu">
                         <li><a href="<?php echo esc_url(home_url('/categoria-produto/decants-2/')); ?>">Todos os Decants</a></li>
-                        <li><a href="<?php echo esc_url(home_url('/#guia-decants')); ?>">Guia de Tamanhos (2ml, 5ml, 10ml)</a></li>
+                        <li><a href="<?php echo esc_url(home_url('/#guia-decants')); ?>">Guia de Tamanhos (5ml, 10ml, 15ml)</a></li>
                         <li><a href="<?php echo esc_url(home_url('/categoria-produto/kits/')); ?>">Kits Degustação</a></li>
                     </ul>
+                </li>
+                <li class="cj-nav-item cj-has-dropdown">
+                    <a href="<?php echo esc_url(home_url('/loja/')); ?>">
+                        <span>Marcas</span>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left: 3px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </a>
+                    <div class="cj-mega-menu">
+                        <div class="cj-mega-col">
+                            <span class="cj-mega-title">Categorias</span>
+                            <ul class="cj-mega-list">
+                                <li><a href="<?php echo esc_url(home_url('/categoria-produto/perfumes/')); ?>">Perfumes</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/categoria-produto/decants-2/')); ?>">Decants</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/categoria-produto/kits/')); ?>">Kits de Degustação</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/loja/')); ?>">Loja Completa</a></li>
+                            </ul>
+                        </div>
+                        <div class="cj-mega-col">
+                            <span class="cj-mega-title">Marcas em Destaque</span>
+                            <ul class="cj-mega-list">
+                                <?php
+                                $cj_brands = array('Carolina Herrera', 'Dior', 'Paco Rabanne', 'Jean Paul Gaultier', 'Versace', 'Lattafa', 'Mugler', 'Chanel');
+                                foreach ($cj_brands as $cj_brand) :
+                                ?>
+                                <li><a href="<?php echo esc_url(home_url('/?s=' . urlencode($cj_brand) . '&post_type=product')); ?>"><?php echo esc_html($cj_brand); ?></a></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <div class="cj-mega-col">
+                            <span class="cj-mega-title">Ajuda</span>
+                            <ul class="cj-mega-list">
+                                <li><a href="<?php echo esc_url(home_url('/#guia-decants')); ?>">Guia de Tamanhos</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/categoria-produto/kits/')); ?>">Kits para Presente</a></li>
+                                <li><a href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>">Minha Conta</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/#contato')); ?>">Contato</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </li>
                 <li class="cj-nav-item"><a href="<?php echo esc_url(home_url('/categoria-produto/kits/')); ?>">Kits</a></li>
                 <li class="cj-nav-item"><a href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>">Loja Completa</a></li>
@@ -118,12 +155,14 @@ if (!defined('ABSPATH')) {
     </div>
     <ul class="cj-mobile-list">
         <li><a href="<?php echo esc_url(home_url('/')); ?>" class="cj-mobile-link">Início</a></li>
-        <li><a href="<?php echo esc_url(home_url('/categoria-produto/perfumes/')); ?>" class="cj-mobile-link">Perfumes</a></li>
         <li><a href="<?php echo esc_url(home_url('/categoria-produto/decants-2/')); ?>" class="cj-mobile-link">Decants</a></li>
+        <li><a href="<?php echo esc_url(home_url('/categoria-produto/perfumes/')); ?>" class="cj-mobile-link">Perfumes</a></li>
         <li><a href="<?php echo esc_url(home_url('/categoria-produto/kits/')); ?>" class="cj-mobile-link">Kits</a></li>
-        <li><a href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>" class="cj-mobile-link">Loja Completa</a></li>
         <li><a href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" class="cj-mobile-link">Minha Conta</a></li>
-        <li><a href="<?php echo esc_url(home_url('/#contato')); ?>" class="cj-mobile-link">Contato</a></li>
+        <li><a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="cj-mobile-link">Carrinho</a></li>
+        <li class="cj-mobile-secondary" aria-hidden="true" role="presentation"></li>
+        <li><a href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>" class="cj-mobile-link is-secondary">Loja Completa</a></li>
+        <li><a href="<?php echo esc_url(home_url('/#contato')); ?>" class="cj-mobile-link is-secondary">Contato</a></li>
     </ul>
 </aside>
 

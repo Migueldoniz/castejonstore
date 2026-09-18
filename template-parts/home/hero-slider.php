@@ -9,29 +9,101 @@ if (!defined('ABSPATH')) {
 
 $upload_url = get_template_directory_uri() . '/assets/images';
 
-$slides = array(
-    array(
+$cj_page_details = get_option('trustindex-google-page-details');
+$cj_review_url = (is_array($cj_page_details) && !empty($cj_page_details['review_url'])) ? $cj_page_details['review_url'] : '';
+
+$raw_slides_defaults = array(
+    1 => array(
         'title'          => 'Fragrâncias Icônicas - Bleu de Chanel & La Vie Est Belle',
         'image_desktop'  => $upload_url . '/banners/slide-1-desktop.webp',
         'image_mobile'   => $upload_url . '/banners/slide-1-mobile.webp',
         'link'           => home_url('/categoria-produto/perfumes/'),
         'alt'            => 'Fragrâncias Icônicas - Bleu de Chanel e La Vie Est Belle - Castejon Store',
+        'kicker'         => 'Perfumaria original e lacrada',
+        'h1'             => 'Descubra o perfume ideal sem investir no frasco no escuro',
+        'sub'            => 'Decants originais de 5ml, 10ml e 15ml para testar na pele com envio rastreado e procedência garantida.',
+        'sub_mobile'     => 'Decants de 5ml a 15ml para testar na pele.',
+        'cta_primary'    => array('Quero experimentar um decant', home_url('/categoria-produto/decants-2/')),
+        'cta_secondary'  => array('Ver frascos originais', home_url('/categoria-produto/perfumes/')),
     ),
-    array(
+    2 => array(
         'title'          => 'Perfumes Árabes & Decants - Lattafa Yara e Asad',
         'image_desktop'  => $upload_url . '/banners/slide-2-desktop.webp',
         'image_mobile'   => $upload_url . '/banners/slide-2-mobile.webp',
         'link'           => home_url('/categoria-produto/decants-2/'),
         'alt'            => 'Perfumes Árabes e Decants - Lattafa Yara e Asad - Castejon Store',
+        'kicker'         => 'Decants de nicho',
+        'h1'             => 'Fragrâncias raras para testar na pele antes do frasco cheio',
+        'sub'            => 'Decants originais de 5ml, 10ml e 15ml com envio rastreado e procedência garantida.',
+        'sub_mobile'     => 'Decants de 5ml a 15ml para testar na pele.',
+        'cta_primary'    => array('Quero experimentar um decant', home_url('/categoria-produto/decants-2/')),
+        'cta_secondary'  => array('Ver catálogo completo', home_url('/loja/')),
     ),
-    array(
+    3 => array(
         'title'          => 'Perfume que Marca, Presença que Encanta',
         'image_desktop'  => $upload_url . '/banners/slide-3-desktop.webp',
         'image_mobile'   => $upload_url . '/banners/slide-3-mobile.webp',
         'link'           => home_url('/loja/'),
         'alt'            => 'Perfume que Marca, Presença que Encanta - Castejon Store',
+        'kicker'         => 'Curadoria por experiência',
+        'h1'             => 'Conheça na pele antes de investir',
+        'sub'            => 'Decants originais, kits de degustação e frascos lacrados com envio rastreado para todo o Brasil.',
+        'sub_mobile'     => 'Teste na pele antes de comprar o frasco.',
+        'cta_primary'    => array('Quero experimentar um decant', home_url('/categoria-produto/decants-2/')),
+        'cta_secondary'  => array('Ver frascos originais', home_url('/categoria-produto/perfumes/')),
     ),
 );
+
+$slides = array();
+for ($i = 1; $i <= 3; $i++) {
+    $def = $raw_slides_defaults[$i];
+    
+    // Imagens (com fallback para os arquivos locais)
+    $img_desktop = get_theme_mod("castejon_slide_{$i}_img_desktop", '');
+    if (empty($img_desktop)) {
+        // Suporte retrocompatível ao campo antigo 'castejon_slide_X_img'
+        $img_desktop = get_theme_mod("castejon_slide_{$i}_img", $def['image_desktop']);
+    }
+    
+    $img_mobile = get_theme_mod("castejon_slide_{$i}_img_mobile", $def['image_mobile']);
+    
+    // Textos
+    $kicker = get_theme_mod("castejon_slide_{$i}_kicker", $def['kicker']);
+    $title  = get_theme_mod("castejon_slide_{$i}_title", $def['h1']);
+    $sub    = get_theme_mod("castejon_slide_{$i}_sub", $def['sub']);
+    $link   = get_theme_mod("castejon_slide_{$i}_link", $def['link']);
+    
+    // CTAs
+    $cta_primary_text = get_theme_mod("castejon_slide_{$i}_cta_primary_text", $def['cta_primary'][0]);
+    $cta_primary_url  = get_theme_mod("castejon_slide_{$i}_cta_primary_url", $def['cta_primary'][1]);
+    
+    $cta_secondary_text = get_theme_mod("castejon_slide_{$i}_cta_secondary_text", $def['cta_secondary'][0]);
+    $cta_secondary_url  = get_theme_mod("castejon_slide_{$i}_cta_secondary_url", $def['cta_secondary'][1]);
+
+    // Cache busting inteligente para atualizar instantaneamente no navegador
+    $raw_img_desktop = $img_desktop ?: $def['image_desktop'];
+    $raw_img_mobile  = $img_mobile ?: $def['image_mobile'];
+    
+    $desktop_file = get_template_directory() . '/assets/images/banners/' . basename(parse_url($raw_img_desktop, PHP_URL_PATH));
+    $mobile_file  = get_template_directory() . '/assets/images/banners/' . basename(parse_url($raw_img_mobile, PHP_URL_PATH));
+    
+    $v_desktop = file_exists($desktop_file) ? filemtime($desktop_file) : time();
+    $v_mobile  = file_exists($mobile_file) ? filemtime($mobile_file) : time();
+
+    $slides[] = array(
+        'title'          => $def['title'],
+        'image_desktop'  => add_query_arg('v', $v_desktop, $raw_img_desktop),
+        'image_mobile'   => add_query_arg('v', $v_mobile, $raw_img_mobile),
+        'link'           => $link ?: $def['link'],
+        'alt'            => $title ?: $def['alt'],
+        'kicker'         => $kicker,
+        'h1'             => $title ?: $def['h1'],
+        'sub'            => $sub,
+        'sub_mobile'     => !empty($def['sub_mobile']) ? $def['sub_mobile'] : $sub,
+        'cta_primary'    => array($cta_primary_text, $cta_primary_url),
+        'cta_secondary'  => array($cta_secondary_text, $cta_secondary_url),
+    );
+}
 ?>
 
 <section class="cj-hero-slider-section" aria-label="Destaques da Loja">
@@ -59,6 +131,24 @@ $slides = array(
                             />
                         </picture>
                     </a>
+
+                    <?php $hero_heading_tag = $index === 0 ? 'h1' : 'h2'; ?>
+                    <div class="cj-hero-copy">
+                        <div class="cj-hero-copy-inner">
+                            <?php if (!empty($slide['kicker'])) : ?>
+                                <span class="cj-hero-kicker"><?php echo esc_html($slide['kicker']); ?></span>
+                            <?php endif; ?>
+                            <?php if (!empty($slide['h1'])) : ?>
+                                <<?php echo $hero_heading_tag; ?> class="cj-hero-h1"><?php echo esc_html($slide['h1']); ?></<?php echo $hero_heading_tag; ?>>
+                            <?php endif; ?>
+                            <?php if (!empty($slide['sub'])) : ?>
+                                <p class="cj-hero-sub cj-hero-sub-full"><?php echo esc_html($slide['sub']); ?></p>
+                            <?php endif; ?>
+                            <?php if (!empty($slide['sub_mobile'])) : ?>
+                                <p class="cj-hero-sub cj-hero-sub-short"><?php echo esc_html($slide['sub_mobile']); ?></p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
             <?php endforeach; ?>
         </div>

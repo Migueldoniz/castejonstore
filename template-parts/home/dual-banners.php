@@ -23,8 +23,16 @@ $cj_get_thumb = function($term, $fallback) {
     return $fallback;
 };
 
-$img_decants = $cj_get_thumb($cat_decants, 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=1200&auto=format&fit=crop');
-$img_lacrados = $cj_get_thumb($cat_perfumes, 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=1200&auto=format&fit=crop');
+$custom_decants_img = get_theme_mod('castejon_dual_banner_decants_img', '');
+$custom_lacrados_img = get_theme_mod('castejon_dual_banner_lacrados_img', '');
+
+$img_decants = !empty($custom_decants_img) 
+    ? $custom_decants_img 
+    : $cj_get_thumb($cat_decants, 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=1200&auto=format&fit=crop');
+
+$img_lacrados = !empty($custom_lacrados_img) 
+    ? $custom_lacrados_img 
+    : $cj_get_thumb($cat_perfumes, 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?q=80&w=1200&auto=format&fit=crop');
 ?>
 <section class="cj-dual-banners-section">
     <div class="cj-container">
@@ -36,7 +44,7 @@ $img_lacrados = $cj_get_thumb($cat_perfumes, 'https://images.unsplash.com/photo-
                 <div class="cj-dual-banner-content">
                     <span class="cj-dual-banner-badge">Experimente Fragrâncias de Nicho</span>
                     <h3 class="cj-dual-banner-title">DECANTS</h3>
-                    <p class="cj-dual-banner-desc">Fracionados de 2ml, 5ml e 10ml com selo de autenticidade</p>
+                    <p class="cj-dual-banner-desc">Fracionados de 5ml, 10ml e 15ml com selo de autenticidade</p>
                     <span class="cj-dual-banner-cta">
                         <span>Explorar Decants</span>
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>

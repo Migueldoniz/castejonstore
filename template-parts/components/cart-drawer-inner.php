@@ -38,6 +38,53 @@ $progress_percent = min(100, ($subtotal_raw / $free_shipping_goal) * 100);
         <?php endif; ?>
     </div>
 
+    <?php if (!empty($cart_items) && $remaining_for_free_shipping > 0) :
+        $cj_cart_product_ids = array();
+        foreach ($cart_items as $cart_item) {
+            $cj_cart_product_ids[] = $cart_item['product_id'];
+        }
+        $cj_suggest_args = array(
+            'post_type'      => 'product',
+            'posts_per_page' => 3,
+            'orderby'        => 'meta_value_num',
+            'meta_key'       => '_price',
+            'order'          => 'ASC',
+            'tax_query'      => array(
+                array(
+                    'taxonomy' => 'product_cat',
+                    'field'    => 'slug',
+                    'terms'    => array('decants-2', 'decants'),
+                ),
+            ),
+            'post__not_in'   => $cj_cart_product_ids,
+            'no_found_rows'  => true,
+        );
+        $cj_suggest_query = new WP_Query($cj_suggest_args);
+        if ($cj_suggest_query->have_posts()) :
+    ?>
+        <div class="cj-drawer-suggest">
+            <div class="cj-drawer-suggest-title">Complete R$299 e ganhe frete grátis</div>
+            <div class="cj-drawer-suggest-list">
+                <?php
+                while ($cj_suggest_query->have_posts()) :
+                    $cj_suggest_query->the_post();
+                    $cj_suggest = wc_get_product(get_the_ID());
+                    if (!$cj_suggest) {
+                        continue;
+                    }
+                ?>
+                    <a href="<?php echo esc_url($cj_suggest->get_permalink()); ?>" class="cj-drawer-suggest-item">
+                        <?php echo $cj_suggest->get_image('woocommerce_gallery_thumbnail', array('class' => 'cj-suggest-thumb')); ?>
+                        <span class="cj-suggest-name"><?php echo esc_html(wp_trim_words($cj_suggest->get_name(), 6)); ?></span>
+                        <span class="cj-suggest-price"><?php echo wp_kses_post($cj_suggest->get_price_html()); ?></span>
+                    </a>
+                <?php endwhile; ?>
+                <?php wp_reset_postdata(); ?>
+            </div>
+            <a href="<?php echo esc_url(home_url('/categoria-produto/decants-2/')); ?>" class="cj-drawer-suggest-link">Ver todos os decants</a>
+        </div>
+    <?php endif; endif; ?>
+
     <!-- Lista de Itens do Carrinho -->
     <div class="cj-drawer-items-list">
         <?php if (empty($cart_items)) : ?>

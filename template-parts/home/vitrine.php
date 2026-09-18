@@ -14,14 +14,30 @@ $link     = !empty($args['link']) ? $args['link'] : home_url('/loja/');
 $is_alt   = !empty($args['is_alt']) ? 'is-alt' : '';
 $orderby  = !empty($args['orderby']) ? $args['orderby'] : 'date';
 
+// Traduz o orderby "popularity" do WooCommerce (nativo só no loop principal)
+if ($orderby === 'popularity') {
+    $query_args['meta_key'] = 'total_sales';
+    $orderby = 'meta_value_num';
+}
+
 $query_args = array(
     'post_type'      => 'product',
     'post_status'    => 'publish',
     'posts_per_page' => $limit,
-    'orderby'        => $orderby,
+    'orderby'        => array(
+        'stock_status_clause' => 'ASC',
+        $orderby              => 'DESC',
+    ),
     'order'          => 'DESC',
     'fields'         => 'ids',
     'no_found_rows'  => true,
+    'meta_query'     => array(
+        'stock_status_clause' => array(
+            'key'     => '_stock_status',
+            'compare' => 'IN',
+            'value'   => array('instock', 'onbackorder', 'outofstock'),
+        ),
+    ),
 );
 
 if (!empty($category)) {
@@ -73,7 +89,7 @@ if (empty($product_ids)) {
             </a>
         </div>
 
-        <div class="cj-products-grid">
+        <div class="cj-products-grid products">
             <?php
             foreach ($product_ids as $p_id) {
                 get_template_part('template-parts/components/product-card', null, array(

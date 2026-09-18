@@ -44,10 +44,11 @@ if (!defined('ABSPATH')) {
                     <a href="<?php echo esc_url(wc_get_cart_url()); ?>">Carrinho</a>
                     <?php 
                     $wa_num = get_theme_mod('castejon_whatsapp_number', '');
-                    if ($wa_num) : ?>
-                        <a href="<?php echo esc_url('https://wa.me/' . preg_replace('/[^0-9]/', '', $wa_num)); ?>" target="_blank" rel="noopener noreferrer">WhatsApp de Suporte</a>
+                    $clean_wa = preg_replace('/[^0-9]/', '', $wa_num);
+                    if (!empty($clean_wa)) : ?>
+                        <a href="<?php echo esc_url('https://wa.me/' . $clean_wa); ?>" target="_blank" rel="noopener noreferrer">WhatsApp de Suporte</a>
                     <?php else : ?>
-                        <a href="https://wa.me/5516999999999" target="_blank" rel="noopener noreferrer">WhatsApp de Suporte</a>
+                        <a href="<?php echo esc_url('mailto:' . sanitize_email(get_theme_mod('castejon_contact_email', 'contato@castejonstore.com'))); ?>">Fale Conosco</a>
                     <?php endif; ?>
                     <a href="<?php echo esc_url(home_url('/politica-de-privacidade/')); ?>">Política de Privacidade</a>
                     <a href="<?php echo esc_url(home_url('/termos/')); ?>">Termos de Uso</a>
@@ -99,5 +100,13 @@ if (!defined('ABSPATH')) {
 </footer>
 
 <?php wp_footer(); ?>
+
+<!-- Quickshop Modal -->
+<div class="cj-quickshop-backdrop" id="cj-quickshop-backdrop"></div>
+<div class="cj-quickshop-modal" id="cj-quickshop-modal" role="dialog" aria-modal="true" aria-label="Compra rápida">
+    <button type="button" class="cj-quickshop-close" id="cj-quickshop-close" aria-label="Fechar">&times;</button>
+    <div class="cj-quickshop-content" id="cj-quickshop-content"></div>
+</div>
+
 </body>
 </html>

@@ -61,6 +61,17 @@ function castejon_enqueue_scripts() {
     $css_version = file_exists($css_path) ? filemtime($css_path) : CASTEJON_THEME_VERSION;
     $js_version  = file_exists($js_path) ? filemtime($js_path) : CASTEJON_THEME_VERSION;
 
+    // CSS base do widget Trustindex (apenas na home) — carregado ANTES do main.css
+    // para que os estilos do tema (main.css) tenham prioridade na cascata.
+    if (is_front_page()) {
+        wp_register_style('cj-trustindex-base', false);
+        wp_enqueue_style('cj-trustindex-base');
+        $cj_ti_base_css = get_option('trustindex-google-css-content');
+        if ($cj_ti_base_css) {
+            wp_add_inline_style('cj-trustindex-base', $cj_ti_base_css);
+        }
+    }
+
     // CSS Principal do Tema
     wp_enqueue_style(
         'castejon-main',
@@ -78,13 +89,69 @@ function castejon_enqueue_scripts() {
         true
     );
 
-    // Dados para scripts frontend (se necessário)
+    // Dados para scripts frontend
     wp_localize_script('castejon-main', 'castejonData', array(
         'ajaxUrl'  => admin_url('admin-ajax.php'),
         'siteUrl'  => home_url('/'),
+        'nonce'    => wp_create_nonce('castejon_ajax_nonce'),
     ));
 }
 add_action('wp_enqueue_scripts', 'castejon_enqueue_scripts');
+
+// ==========================================
+// BACKEND SEGURO: NEWSLETTER VIP CASTEJON
+// ==========================================
+add_action('wp_ajax_castejon_subscribe_newsletter', 'castejon_subscribe_newsletter_handler');
+add_action('wp_ajax_nopriv_castejon_subscribe_newsletter', 'castejon_subscribe_newsletter_handler');
+
+function castejon_subscribe_newsletter_handler() {
+    check_ajax_referer('castejon_ajax_nonce', 'nonce');
+
+    $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+
+    if (empty($email) || !is_email($email)) {
+        wp_send_json_error(array(
+            'message' => 'Por favor, informe um endereço de e-mail válido.',
+        ));
+    }
+
+    $subscribers = get_option('castejon_newsletter_subscribers', array());
+    if (!is_array($subscribers)) {
+        $subscribers = array();
+    }
+
+    // Verifica se já está cadastrado
+    foreach ($subscribers as $sub) {
+        if (is_array($sub) && isset($sub['email']) && strtolower($sub['email']) === strtolower($email)) {
+            wp_send_json_success(array(
+                'message' => 'Você já está cadastrado no nosso Clube VIP! Fique de olho na sua caixa de entrada.',
+            ));
+        }
+    }
+
+    // Adiciona novo inscrito
+    $subscribers[] = array(
+        'email'      => $email,
+        'created_at' => current_time('mysql'),
+        'ip'         => sanitize_text_field($_SERVER['REMOTE_ADDR'] ?? ''),
+    );
+
+    update_option('castejon_newsletter_subscribers', $subscribers, false);
+
+    // Opcional: Envia notificação por e-mail para o administrador se configurado
+    $admin_email = get_option('admin_email');
+    if ($admin_email) {
+        @wp_mail(
+            $admin_email,
+            'Novo Inscrito na Newsletter - Castejon Store',
+            "Um novo cliente se inscreveu na Newsletter VIP da loja:\n\nE-mail: {$email}\nData: " . current_time('d/m/Y H:i')
+        );
+    }
+
+    wp_send_json_success(array(
+        'message' => '✨ Inscrição confirmada com sucesso! Você receberá ofertas e lançamentos exclusivos.',
+    ));
+}
 
 // Carrega extensões modulares
 if (class_exists('WooCommerce')) {

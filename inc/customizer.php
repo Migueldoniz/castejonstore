@@ -56,17 +56,65 @@ function castejon_customize_register($wp_customize) {
     // SLIDER DE BANNERS DA HOME (3 SLIDES)
     // ==========================================
     for ($i = 1; $i <= 3; $i++) {
-        // Imagem do Slide
-        $wp_customize->add_setting("castejon_slide_{$i}_img", array(
+        // Imagem Desktop do Slide
+        $wp_customize->add_setting("castejon_slide_{$i}_img_desktop", array(
             'default'           => '',
             'sanitize_callback' => 'esc_url_raw',
         ));
-        $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, "castejon_slide_{$i}_img", array(
-            'label'       => sprintf(__('Slider - Imagem do Slide %d', 'castejon-theme'), $i),
-            'description' => __('Recomendado: proporção 16:9 widescreen (ex: 1920x1080px)', 'castejon-theme'),
+        $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, "castejon_slide_{$i}_img_desktop", array(
+            'label'       => sprintf(__('Slide %d - Imagem Desktop (1920x650)', 'castejon-theme'), $i),
+            'description' => __('Recomendado: 1920x650px em WebP/JPG otimizado', 'castejon-theme'),
             'section'     => 'castejon_home_banners',
-            'settings'    => "castejon_slide_{$i}_img",
+            'settings'    => "castejon_slide_{$i}_img_desktop",
         )));
+
+        // Imagem Mobile do Slide
+        $wp_customize->add_setting("castejon_slide_{$i}_img_mobile", array(
+            'default'           => '',
+            'sanitize_callback' => 'esc_url_raw',
+        ));
+        $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, "castejon_slide_{$i}_img_mobile", array(
+            'label'       => sprintf(__('Slide %d - Imagem Mobile (800x1000)', 'castejon-theme'), $i),
+            'description' => __('Recomendado: 800x1000px em WebP/JPG otimizado', 'castejon-theme'),
+            'section'     => 'castejon_home_banners',
+            'settings'    => "castejon_slide_{$i}_img_mobile",
+        )));
+
+        // Kicker (selo superior)
+        $wp_customize->add_setting("castejon_slide_{$i}_kicker", array(
+            'default'           => '',
+            'sanitize_callback' => 'sanitize_text_field',
+        ));
+        $wp_customize->add_control("castejon_slide_{$i}_kicker", array(
+            'label'       => sprintf(__('Slide %d - Kicker (Texto Pequeno Acima)', 'castejon-theme'), $i),
+            'type'        => 'text',
+            'section'     => 'castejon_home_banners',
+            'settings'    => "castejon_slide_{$i}_kicker",
+        ));
+
+        // Título Principal
+        $wp_customize->add_setting("castejon_slide_{$i}_title", array(
+            'default'           => '',
+            'sanitize_callback' => 'sanitize_text_field',
+        ));
+        $wp_customize->add_control("castejon_slide_{$i}_title", array(
+            'label'       => sprintf(__('Slide %d - Título Principal', 'castejon-theme'), $i),
+            'type'        => 'text',
+            'section'     => 'castejon_home_banners',
+            'settings'    => "castejon_slide_{$i}_title",
+        ));
+
+        // Subtítulo / Descrição
+        $wp_customize->add_setting("castejon_slide_{$i}_sub", array(
+            'default'           => '',
+            'sanitize_callback' => 'sanitize_textarea_field',
+        ));
+        $wp_customize->add_control("castejon_slide_{$i}_sub", array(
+            'label'       => sprintf(__('Slide %d - Subtítulo / Descrição', 'castejon-theme'), $i),
+            'type'        => 'textarea',
+            'section'     => 'castejon_home_banners',
+            'settings'    => "castejon_slide_{$i}_sub",
+        ));
 
         // Link do Slide
         $wp_customize->add_setting("castejon_slide_{$i}_link", array(
@@ -74,12 +122,85 @@ function castejon_customize_register($wp_customize) {
             'sanitize_callback' => 'esc_url_raw',
         ));
         $wp_customize->add_control("castejon_slide_{$i}_link", array(
-            'label'       => sprintf(__('Slider - Link de Destino do Slide %d', 'castejon-theme'), $i),
+            'label'       => sprintf(__('Slide %d - Link de Destino Principal', 'castejon-theme'), $i),
             'type'        => 'url',
             'section'     => 'castejon_home_banners',
             'settings'    => "castejon_slide_{$i}_link",
         ));
+
+        // Texto CTA Primário
+        $wp_customize->add_setting("castejon_slide_{$i}_cta_primary_text", array(
+            'default'           => '',
+            'sanitize_callback' => 'sanitize_text_field',
+        ));
+        $wp_customize->add_control("castejon_slide_{$i}_cta_primary_text", array(
+            'label'       => sprintf(__('Slide %d - Botão Primário (Texto)', 'castejon-theme'), $i),
+            'type'        => 'text',
+            'section'     => 'castejon_home_banners',
+            'settings'    => "castejon_slide_{$i}_cta_primary_text",
+        ));
+
+        // Link CTA Primário
+        $wp_customize->add_setting("castejon_slide_{$i}_cta_primary_url", array(
+            'default'           => '',
+            'sanitize_callback' => 'esc_url_raw',
+        ));
+        $wp_customize->add_control("castejon_slide_{$i}_cta_primary_url", array(
+            'label'       => sprintf(__('Slide %d - Botão Primário (Link)', 'castejon-theme'), $i),
+            'type'        => 'url',
+            'section'     => 'castejon_home_banners',
+            'settings'    => "castejon_slide_{$i}_cta_primary_url",
+        ));
+
+        // Texto CTA Secundário
+        $wp_customize->add_setting("castejon_slide_{$i}_cta_secondary_text", array(
+            'default'           => '',
+            'sanitize_callback' => 'sanitize_text_field',
+        ));
+        $wp_customize->add_control("castejon_slide_{$i}_cta_secondary_text", array(
+            'label'       => sprintf(__('Slide %d - Botão Secundário (Texto)', 'castejon-theme'), $i),
+            'type'        => 'text',
+            'section'     => 'castejon_home_banners',
+            'settings'    => "castejon_slide_{$i}_cta_secondary_text",
+        ));
+
+        // Link CTA Secundário
+        $wp_customize->add_setting("castejon_slide_{$i}_cta_secondary_url", array(
+            'default'           => '',
+            'sanitize_callback' => 'esc_url_raw',
+        ));
+        $wp_customize->add_control("castejon_slide_{$i}_cta_secondary_url", array(
+            'label'       => sprintf(__('Slide %d - Botão Secundário (Link)', 'castejon-theme'), $i),
+            'type'        => 'url',
+            'section'     => 'castejon_home_banners',
+            'settings'    => "castejon_slide_{$i}_cta_secondary_url",
+        ));
     }
+
+    // ==========================================
+    // DUAL BANNERS (DECANTS & LACRADOS)
+    // ==========================================
+    $wp_customize->add_setting('castejon_dual_banner_decants_img', array(
+        'default'           => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ));
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'castejon_dual_banner_decants_img', array(
+        'label'       => __('Banner Duplo - Imagem Decants', 'castejon-theme'),
+        'description' => __('Recomendado: 800x500px em WebP/JPG', 'castejon-theme'),
+        'section'     => 'castejon_home_banners',
+        'settings'    => 'castejon_dual_banner_decants_img',
+    )));
+
+    $wp_customize->add_setting('castejon_dual_banner_lacrados_img', array(
+        'default'           => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ));
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'castejon_dual_banner_lacrados_img', array(
+        'label'       => __('Banner Duplo - Imagem Lacrados', 'castejon-theme'),
+        'description' => __('Recomendado: 800x500px em WebP/JPG', 'castejon-theme'),
+        'section'     => 'castejon_home_banners',
+        'settings'    => 'castejon_dual_banner_lacrados_img',
+    )));
 
     // ==========================================
     // CONTATO E REDES SOCIAIS

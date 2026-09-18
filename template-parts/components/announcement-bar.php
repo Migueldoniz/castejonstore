@@ -14,8 +14,10 @@ if (!defined('ABSPATH')) {
             </button>
             <div class="cj-announcement-slider">
                 <div class="cj-announcement-item is-active">
-                    <span class="cj-announcement-icon">🚚</span>
-                    <strong>FRETE GRÁTIS</strong> PARA TODO O BRASIL EM COMPRAS ACIMA DE R$ 299
+                    <a href="<?php echo esc_url(home_url('/categoria-produto/kits/')); ?>" class="cj-announcement-link">
+                        <span class="cj-announcement-icon">🎁</span>
+                        KITS DE DEGUSTAÇÃO A PARTIR DE <strong>R$110</strong> — SELEÇÕES TEMÁTICAS
+                    </a>
                 </div>
                 <div class="cj-announcement-item">
                     <span class="cj-announcement-icon">💳</span>
