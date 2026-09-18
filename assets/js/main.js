@@ -716,6 +716,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // slide fica com largura de miniatura (foto pequena no canto).
   const cjFixGalleryWidth = () => {
     document.querySelectorAll('.cj-gallery-wrapper').forEach((wrap) => {
+      // Limite de execucoes: evita loop infinito se o plugin insistir em re-quebrar
+      const runs = parseInt(wrap.dataset.cjGalleryRuns || '0', 10);
+      if (runs >= 6) return;
       const track = wrap.querySelector('.slick-track');
       const slides = wrap.querySelectorAll('.slick-slide');
       if (!track || !slides.length) return;
@@ -723,6 +726,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!w) return;
       const first = Math.round(slides[0].getBoundingClientRect().width);
       if (first > 0 && first < w * 0.6) {
+        wrap.dataset.cjGalleryRuns = String(runs + 1);
         // Corrige min-width inline errado que o plugin aplica no wrapper
         const wvgWrap = wrap.querySelector('.woo-variation-gallery-wrapper');
         if (wvgWrap) {
@@ -744,15 +748,17 @@ document.addEventListener('DOMContentLoaded', () => {
           list.style.width = '100%';
           list.style.height = 'auto';
         }
-        // Recalcula o slick pela DOM corrigida (sem disparar resize global,
-        // que faria o plugin reaplicar as medidas erradas)
-        if (window.jQuery) {
-          window.jQuery(wrap).find('.slick-initialized').each(function () {
-            try { window.jQuery(this).slick('setPosition'); } catch (e) { /* ignore */ }
-          });
-        }
       }
     });
+  };
+
+  let cjGalleryFixTimer = null;
+  const cjGalleryFixDebounced = () => {
+    if (cjGalleryFixTimer) return;
+    cjGalleryFixTimer = setTimeout(() => {
+      cjGalleryFixTimer = null;
+      cjFixGalleryWidth();
+    }, 350);
   };
 
   const cjWatchGallery = () => {
@@ -760,7 +766,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (wrap.dataset.cjGalleryWatch) return;
       wrap.dataset.cjGalleryWatch = '1';
       if ('MutationObserver' in window) {
-        new MutationObserver(() => cjFixGalleryWidth())
+        new MutationObserver(() => cjGalleryFixDebounced())
           .observe(wrap, { attributes: true, subtree: true, attributeFilter: ['style'] });
       }
     });
@@ -777,7 +783,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   window.addEventListener('load', () => setTimeout(cjGalleryBoot, 3000));
   window.addEventListener('load', () => setTimeout(cjGalleryBoot, 6000));
-  window.addEventListener('resize', () => cjFixGalleryWidth());
+  window.addEventListener('resize', () => cjGalleryFixDebounced());
   document.addEventListener('change', (e) => {
     if (e.target.closest('.variations_form')) setTimeout(() => { cjWatchGallery(); cjFixGalleryWidth(); }, 400);
   });
