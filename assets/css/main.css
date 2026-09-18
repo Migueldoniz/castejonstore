@@ -5204,7 +5204,7 @@ p.woocommerce-noreviews::after {
 .cj-hero-h1 {
   font-family: var(--font-serif);
   font-weight: 700;
-  font-size: clamp(2rem, 3.4vw, 3.1rem);
+  font-size: clamp(2.2rem, 4.2vw, 3.5rem);
   line-height: 1.08;
   letter-spacing: -0.015em;
   color: #ffffff;
@@ -5214,7 +5214,7 @@ p.woocommerce-noreviews::after {
 }
 
 .cj-hero-sub {
-  font-size: 0.92rem;
+  font-size: 1rem;
   line-height: 1.5;
   color: #d5dae8;
   max-width: 46ch;
