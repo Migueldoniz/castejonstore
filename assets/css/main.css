@@ -1163,16 +1163,6 @@ img {
   max-width: 100% !important;
 }
 
-/* Contém o float do container do woo-variation-gallery (evita wrapper com altura 0) */
-.cj-gallery-wrapper {
-  display: flow-root;
-}
-
-.cj-gallery-wrapper .woo-variation-product-gallery {
-  float: none;
-  width: 100%;
-}
-
 .cj-product-gallery-side img,
 .woocommerce-product-gallery img,
 .woocommerce-product-gallery__image img,
