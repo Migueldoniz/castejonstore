@@ -710,5 +710,33 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // 12. Defesa: corrige largura da galeria de variações (wvg/slick) quando
+  // plugins de imagem (ex.: WebP Express <picture>) quebram a medição e o
+  // slide fica com largura de miniatura (foto pequena no canto).
+  const cjFixGalleryWidth = () => {
+    document.querySelectorAll('.cj-gallery-wrapper').forEach((wrap) => {
+      const track = wrap.querySelector('.slick-track');
+      const slides = wrap.querySelectorAll('.slick-slide');
+      if (!track || !slides.length) return;
+      const w = Math.round(wrap.getBoundingClientRect().width);
+      if (!w) return;
+      const first = Math.round(slides[0].getBoundingClientRect().width);
+      if (first > 0 && first < w * 0.6) {
+        slides.forEach((s) => { s.style.width = w + 'px'; });
+        track.style.width = (w * slides.length) + 'px';
+        window.dispatchEvent(new Event('resize'));
+      }
+    });
+  };
+  if (document.readyState === 'complete') {
+    setTimeout(cjFixGalleryWidth, 1200);
+  } else {
+    window.addEventListener('load', () => setTimeout(cjFixGalleryWidth, 1200));
+  }
+  window.addEventListener('load', () => setTimeout(cjFixGalleryWidth, 3000));
+  document.addEventListener('change', (e) => {
+    if (e.target.closest('.variations_form')) setTimeout(cjFixGalleryWidth, 400);
+  });
 });
 
