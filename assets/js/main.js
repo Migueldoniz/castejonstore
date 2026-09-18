@@ -725,6 +725,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (first > 0 && first < w * 0.6) {
         slides.forEach((s) => { s.style.width = w + 'px'; });
         track.style.width = (w * slides.length) + 'px';
+        const list = wrap.querySelector('.slick-list');
+        if (list) {
+          list.style.width = '100%';
+          list.style.height = 'auto';
+        }
         window.dispatchEvent(new Event('resize'));
       }
     });
