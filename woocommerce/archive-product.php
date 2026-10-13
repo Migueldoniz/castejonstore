@@ -6,7 +6,23 @@
 defined('ABSPATH') || exit;
 
 get_header('shop');
+
+// Barra sticky de frete grátis (acima de R$150 — confirmado no WooCommerce da produção)
+$cj_cat_cart_total = WC()->cart ? (float) WC()->cart->get_subtotal() : 0;
+$cj_cat_goal = 150.00;
+$cj_cat_remaining = max(0, $cj_cat_goal - $cj_cat_cart_total);
+$cj_cat_pct = min(100, ($cj_cat_cart_total / $cj_cat_goal) * 100);
 ?>
+<div class="cj-cat-freeship" id="cj-cat-freeship">
+    <?php if ($cj_cat_remaining <= 0) : ?>
+        <span class="cj-cat-freeship-ok">Você ganhou <strong>FRETE GRÁTIS</strong> para todo o Brasil</span>
+        <div class="cj-cat-freeship-bar"><div style="width: 100%;"></div></div>
+    <?php else : ?>
+        <span>Faltam <strong><?php echo wc_price($cj_cat_remaining); ?></strong> para ganhar <strong>FRETE GRÁTIS</strong> para todo o Brasil</span>
+        <div class="cj-cat-freeship-bar"><div style="width: <?php echo esc_attr($cj_cat_pct); ?>%;"></div></div>
+    <?php endif; ?>
+</div>
+
 <div class="cj-page-hero">
     <div class="cj-container">
         <h1 class="cj-page-title">

@@ -92,6 +92,23 @@ $is_decant = has_term('decants-2', 'product_cat', $product_id) || has_term('deca
                     ?>
                 </div>
 
+                <?php
+                // Nota de frete grátis no PDP (acima de R$150)
+                $cj_pdp_price = $product->get_price();
+                if ($cj_pdp_price) :
+                    $cj_remaining = 150.00 - (float) $cj_pdp_price;
+                    ?>
+                    <div class="cj-pdp-freeship">
+                        <?php if ($cj_remaining <= 0) : ?>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span><strong>Frete grátis</strong> para todo o Brasil neste produto</span>
+                        <?php else : ?>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7 7 .6-5.2 4.7 1.5 6.9L12 17.7 5.7 21.2l1.5-6.9L2 9.6 9 9z"/></svg>
+                            <span>Faltam <strong><?php echo wc_price($cj_remaining); ?></strong> para ganhar <strong>FRETE GRÁTIS</strong> para todo o Brasil</span>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+
                 <?php if ($is_decant) : ?>
                     <!-- Selo e Explicação de Decant Autêntico (Estilo The Greg's) -->
                     <div class="cj-decant-info-banner">
