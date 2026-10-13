@@ -64,22 +64,7 @@ get_template_part('template-parts/home/vitrine', null, array(
 <!-- 10. FAQ de Objeções (Redução de Risco) -->
 <?php get_template_part('template-parts/home/faq-objetions'); ?>
 
-<!-- 11. Newsletter VIP (Estilo The Gregs) -->
-<section class="cj-newsletter-section">
-    <div class="cj-container">
-        <div class="cj-newsletter-wrap">
-            <div class="cj-newsletter-left">
-                <span class="cj-newsletter-tag" style="color: var(--gregs-gold); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 4px;">Comunidade Castejon</span>
-                <h3>Ganhe 10% na primeira compra</h3>
-                <p>Ao se cadastrar, você recebe seu cupom de 10% off + novidades, decants recém-chegados e kits temáticos no seu e-mail.</p>
-            </div>
-            <form class="cj-newsletter-form">
-                <input type="email" placeholder="Seu melhor e-mail" required />
-                <button type="submit">QUERO MEU 10% OFF</button>
-            </form>
-        </div>
-    </div>
-</section>
+<!-- 11. Newsletter removida a pedido (2026-10) -->
 
 <?php
 get_footer();

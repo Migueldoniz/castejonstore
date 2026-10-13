@@ -1966,7 +1966,7 @@ table.shop_table img,
 .cj-cart-drawer {
   position: fixed;
   top: 0;
-  right: -480px;
+  right: 0;
   width: 100%;
   max-width: 440px;
   height: 100vh;
@@ -1975,11 +1975,13 @@ table.shop_table img,
   display: flex;
   flex-direction: column;
   box-shadow: -10px 0 35px rgba(0, 0, 36, 0.2);
-  transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateX(105%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 
 .cj-cart-drawer.is-active {
-  right: 0;
+  transform: translateX(0);
 }
 
 .cj-cart-drawer-header {
@@ -5172,7 +5174,7 @@ p.woocommerce-noreviews::after {
    em todos os slides (H1s têm tamanhos diferentes) */
 @media (min-width: 1214px) {
   .cj-hero-copy-inner {
-    min-height: 420px;
+    min-height: min(420px, 30vw);
   }
 }
 
@@ -5241,7 +5243,7 @@ p.woocommerce-noreviews::after {
 
   .cj-hero-copy-inner {
     max-width: 720px;
-    min-height: 530px;
+    min-height: min(530px, 30vw);
   }
 
   .cj-hero-kicker {
