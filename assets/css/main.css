@@ -5753,3 +5753,202 @@ html.js-enabled .is-revealed {
   opacity: 1 !important;
   transform: translateY(0) !important;
 }
+
+/* ==========================================================================
+   12. PÁGINAS GENÉRICAS + CARRINHO & CHECKOUT — LAYOUT (2026-10)
+   O wrapper `.cj-page-container` (page.php) não tinha CSS → páginas ficavam
+   full-bleed. Além disso: checkout clássico em 2 colunas + polish.
+   ========================================================================== */
+
+/* Container das páginas genéricas (antes: sem CSS) */
+.cj-page-container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 42px 20px 80px;
+}
+
+/* ---------- CHECKOUT: grid de 2 colunas ---------- */
+.woocommerce-checkout form.woocommerce-checkout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 30px;
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .woocommerce-checkout form.woocommerce-checkout {
+    grid-template-columns: minmax(0, 1fr) 400px;
+    gap: 34px 46px;
+    align-items: start;
+  }
+  .woocommerce-checkout form.woocommerce-checkout #customer_details {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+  }
+  .woocommerce-checkout form.woocommerce-checkout #order_review_heading {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+  }
+  .woocommerce-checkout form.woocommerce-checkout #order_review {
+    grid-column: 2;
+    grid-row: 2 / span 2;
+  }
+}
+
+/* Fatura (col-1) e Entrega (col-2) lado a lado no desktop */
+.woocommerce-checkout #customer_details {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0 30px;
+  width: 100% !important;
+  float: none !important;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .woocommerce-checkout #customer_details {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.woocommerce-checkout #customer_details .col-1,
+.woocommerce-checkout #customer_details .col-2 {
+  width: 100% !important;
+  float: none !important;
+}
+
+/* Títulos das seções */
+.woocommerce-checkout #customer_details h3,
+.woocommerce-checkout #order_review_heading,
+.woocommerce-checkout .cart_totals h2,
+.woocommerce-cart .cart_totals h2 {
+  font-family: var(--font-serif);
+  color: var(--gregs-black);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 4px 0 20px;
+}
+
+/* ---------- Campos ---------- */
+.woocommerce-checkout .form-row {
+  padding: 0 !important;
+  margin: 0 0 16px !important;
+}
+
+.woocommerce-checkout .form-row label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--gregs-black);
+  margin-bottom: 6px;
+}
+
+.woocommerce-checkout .form-row label abbr.required,
+.woocommerce-checkout .form-row label .required {
+  color: #c0392b;
+  text-decoration: none;
+  border: 0;
+}
+
+.woocommerce-checkout .form-row input.input-text,
+.woocommerce-checkout .form-row select,
+.woocommerce-checkout .form-row textarea {
+  width: 100%;
+  padding: 12px 14px !important;
+  border: 1px solid #dcdcdc !important;
+  border-radius: 8px !important;
+  background: #fff;
+  font-size: 0.95rem;
+  color: #222;
+  height: auto !important;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.woocommerce-checkout .form-row input.input-text:focus,
+.woocommerce-checkout .form-row select:focus,
+.woocommerce-checkout .form-row textarea:focus {
+  outline: none;
+  border-color: var(--gregs-gold) !important;
+  box-shadow: 0 0 0 3px rgba(197, 160, 89, .18);
+}
+
+.woocommerce-checkout .form-row.woocommerce-invalid input.input-text,
+.woocommerce-checkout .form-row.woocommerce-invalid select {
+  border-color: #c0392b !important;
+}
+
+/* ---------- Box do resumo (Seu pedido) ---------- */
+.woocommerce-checkout #order_review {
+  background: var(--gregs-bg-alt);
+  border: 1px solid #ececec;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 0;
+}
+
+@media (min-width: 992px) {
+  .woocommerce-checkout #order_review {
+    position: sticky;
+    top: 96px;
+  }
+}
+
+/* ---------- Métodos de pagamento ---------- */
+.woocommerce-checkout ul.wc_payment_methods {
+  list-style: none;
+  margin: 0 0 4px;
+  padding: 0;
+  border: 1px solid #e6e6e6;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.woocommerce-checkout ul.wc_payment_methods li {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.woocommerce-checkout ul.wc_payment_methods li:last-child {
+  border-bottom: none;
+}
+
+.woocommerce-checkout ul.wc_payment_methods li label {
+  font-weight: 600;
+  color: var(--gregs-black);
+  cursor: pointer;
+}
+
+.woocommerce-checkout ul.wc_payment_methods .payment_box {
+  background: #fbfbfb;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.87rem;
+  color: #555;
+  margin-top: 10px;
+}
+
+/* ---------- Botão finalizar + selo ---------- */
+.woocommerce-checkout #place_order {
+  width: 100%;
+  margin-top: 18px;
+  min-height: 52px;
+}
+
+.woocommerce-checkout .woocommerce-terms-and-conditions-wrapper {
+  margin-top: 16px;
+  font-size: 0.82rem;
+  color: #666;
+}
+
+.woocommerce-checkout #order_review form.checkout_coupon p {
+  margin: 0;
+}
+
+/* ---------- Carrinho ---------- */
+.woocommerce-cart .cart-collaterals .cart_totals {
+  width: 100%;
+}

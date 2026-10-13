@@ -9,7 +9,15 @@ get_header();
 <?php if (!(function_exists('is_account_page') && is_account_page())) : ?>
 <div class="cj-page-hero">
     <div class="cj-container">
-        <h1 class="cj-page-title"><?php the_title(); ?></h1>
+        <h1 class="cj-page-title"><?php
+            if (function_exists('is_cart') && is_cart()) {
+                echo 'Carrinho';
+            } elseif (function_exists('is_checkout') && is_checkout()) {
+                echo 'Finalizar compra';
+            } else {
+                the_title();
+            }
+        ?></h1>
     </div>
 </div>
 <?php endif; ?>
