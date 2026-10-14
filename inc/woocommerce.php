@@ -296,8 +296,9 @@ function cj_desc_canon($label) {
     return null;
 }
 function cj_desc_heading_canon($text) {
-    $l = trim(preg_replace('/\s+/', ' ', cj_desc_norm($text)));
-    if (in_array($l, ['informacoes sobre o perfume','piramide olfativa','notas olfativas','caracteristicas','descricao','sobre o perfume','o perfume','caracteristicas adicionais','composicao olfativa'], true)) return 'redundant';
+    $l = cj_desc_norm($text);
+    $l = trim(preg_replace('/\s+/', ' ', preg_replace('/[^a-z0-9 ]+/', ' ', $l)));
+    if (in_array($l, ['informacoes sobre o perfume','piramide olfativa','notas olfativas','caracteristicas','descricao','sobre o perfume','o perfume','caracteristicas adicionais','composicao olfativa','detalhes do produto','detalhes'], true)) return 'redundant';
     if (preg_match('/^(perfil|estilo|destaque|fixacao|projecao|sensacao|performance|indicado|indicacao)/', $l)) return 'section';
     if (preg_match('/^(ocasioes|ocasiao|para quem|quando usar|como e o cheiro)/', $l)) return 'section';
     if (preg_match('/^(informacoes|notas|piramide|composicao)/', $l)) return 'redundant';
