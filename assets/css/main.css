@@ -1519,6 +1519,118 @@ form.cart:not(.variations_form) {
   margin-bottom: 15px;
 }
 
+/* ==========================================================================
+   FICHA OLFATIVA DA DESCRIÇÃO (PDP)
+   Elemento memorável: carta da pirâmide com fio dourado em degradê (evaporação).
+   ========================================================================== */
+.cj-desc {
+  font-family: var(--font-main);
+  color: var(--gregs-text-secondary);
+}
+.cj-desc__lead {
+  font-size: 1.06rem;
+  line-height: 1.75;
+  color: #23233a;
+  max-width: 68ch;
+  margin: 0 0 1.7rem;
+}
+.cj-desc__pyramid {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--gregs-champagne) 0%, #ffffff 92%);
+  border: 1px solid var(--gregs-border);
+  border-radius: var(--radius-card);
+  padding: 1.5rem 1.7rem 1.6rem;
+  margin: 0 0 2rem;
+  max-width: 680px;
+  box-shadow: var(--shadow-card);
+}
+.cj-desc__pyramid::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--gregs-gold) 0%, rgba(197,160,89,0) 100%);
+}
+.cj-desc__family {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--gregs-navy);
+  background: #ffffff;
+  border: 1px solid var(--gregs-gold-light);
+  border-radius: 999px;
+  padding: .28rem .95rem;
+  margin-bottom: 1.15rem;
+}
+.cj-desc__notes { margin: 0; }
+.cj-desc__note {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 1rem;
+  align-items: baseline;
+  padding: .55rem 0;
+  border-top: 1px solid rgba(0, 1, 40, .06);
+}
+.cj-desc__note:first-child { border-top: 0; padding-top: 0; }
+.cj-desc__note dt {
+  font-family: var(--font-serif);
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: #7d6428;
+}
+.cj-desc__note dd {
+  margin: 0;
+  font-size: .96rem;
+  line-height: 1.6;
+  color: #3c3c50;
+}
+.cj-desc__heading {
+  font-family: var(--font-serif);
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: var(--gregs-navy);
+  margin: 1.9rem 0 .85rem;
+  padding-bottom: .4rem;
+  border-bottom: 1px solid var(--gregs-border);
+}
+.cj-desc__list {
+  list-style: none;
+  margin: 0 0 1.3rem;
+  padding: 0;
+  max-width: 68ch;
+}
+.cj-desc__list li {
+  position: relative;
+  padding-left: 1.35rem;
+  margin-bottom: .55rem;
+  line-height: 1.65;
+}
+.cj-desc__list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .62em;
+  width: 6px;
+  height: 6px;
+  background: var(--gregs-gold);
+  transform: rotate(45deg);
+}
+.cj-desc__p {
+  line-height: 1.7;
+  margin: 0 0 1rem;
+  max-width: 68ch;
+}
+.cj-desc__p strong { color: var(--gregs-navy); font-weight: 600; }
+
+@media (max-width: 600px) {
+  .cj-desc__note { grid-template-columns: 1fr; gap: .15rem; }
+  .cj-desc__note dt { font-size: .78rem; }
+  .cj-desc__pyramid { padding: 1.2rem 1.15rem 1.25rem; }
+}
+
 /* Produtos Relacionados */
 .cj-related-products-wrap {
   margin-top: 70px;

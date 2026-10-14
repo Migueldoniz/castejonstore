@@ -268,4 +268,176 @@ function castejon_stock_first_archives($q) {
     $q->set('orderby', $new_orderby);
 }
 
+/* ==========================================================================
+   FICHA OLFATIVA — reestrutura a descrição do produto no PDP
+   Converte o HTML variado (estilos inline Elementor/Apple Notes) em markup
+   semântico (.cj-desc__*) estilizado pelo main.css. Não altera o banco.
+   ========================================================================== */
+
+function cj_desc_raw($html) {
+    $t = preg_replace('/<br\s*\/?>/i', ' ', $html);
+    $t = preg_replace('/<[^>]+>/', ' ', $t);
+    $t = html_entity_decode($t, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $t = str_replace("\xc2\xa0", ' ', $t);
+    $t = preg_replace('/[ \t]+/u', ' ', $t);
+    return trim($t);
+}
+function cj_desc_strip_markers($t) { return trim(preg_replace('/^[●•✔☀→\-\*·▪►️\s]+/u', '', $t)); }
+function cj_desc_norm($s) {
+    $l = strtolower(trim((string) $s));
+    return str_replace(['á','à','â','ã','é','ê','í','ó','ô','õ','ú','ü','ç'], ['a','a','a','a','e','e','i','o','o','o','u','u','c'], $l);
+}
+function cj_desc_canon($label) {
+    $l = cj_desc_norm($label);
+    if (preg_match('/\bfamilia\b/', $l)) return 'familia';
+    if (preg_match('/(^|\b)(notas? de )?(topo|saida)\b/', $l)) return 'topo';
+    if (preg_match('/(^|\b)(notas? de )?(coracao|corpo)\b/', $l)) return 'coracao';
+    if (preg_match('/(^|\b)(notas? de )?(fundo|base)\b/', $l)) return 'fundo';
+    return null;
+}
+function cj_desc_heading_canon($text) {
+    $l = trim(preg_replace('/\s+/', ' ', cj_desc_norm($text)));
+    if (in_array($l, ['informacoes sobre o perfume','piramide olfativa','notas olfativas','caracteristicas','descricao','sobre o perfume','o perfume','caracteristicas adicionais','composicao olfativa'], true)) return 'redundant';
+    if (preg_match('/^(perfil|estilo|destaque|fixacao|projecao|sensacao|performance|indicado|indicacao)/', $l)) return 'section';
+    if (preg_match('/^(ocasioes|ocasiao|para quem|quando usar|como e o cheiro)/', $l)) return 'section';
+    if (preg_match('/^(informacoes|notas|piramide|composicao)/', $l)) return 'redundant';
+    return null;
+}
+$GLOBALS['CJ_FIELD_RE'] = '/(fam[ií]lia olfativa|notas?\s+de\s+topo|notas?\s+de\s+sa[ií]da|notas?\s+de\s+cora[çc][ãa]o|notas?\s+de\s+corpo|notas?\s+de\s+fundo|notas?\s+de\s+base|topo|cora[çc][ãa]o|fundo|base)\s*[:\-–]\s*(.*?)(?=(?:fam[ií]lia olfativa|notas?\s+de\s+topo|notas?\s+de\s+sa[ií]da|notas?\s+de\s+cora[çc][ãa]o|notas?\s+de\s+corpo|notas?\s+de\s+fundo|notas?\s+de\s+base|topo|cora[çc][ãa]o|fundo|base)\s*[:\-–]|\s*[●•✔☀→▪►]|$)/isu';
+
+function cj_desc_blocks($html) {
+    $html = preg_replace('/\sstyle="[^"]*"/i', '', $html);
+    $html = preg_replace('/\sclass="[^"]*"/i', '', $html);
+    $blocks = array();
+    if (!preg_match_all('/<(p|li|h[1-6])\b[^>]*>(.*?)<\/\1>/is', $html, $m, PREG_SET_ORDER)) return $blocks;
+    foreach ($m as $mm) {
+        $inner = $mm[2];
+        $raw = cj_desc_raw($inner);
+        if ($raw === '') continue;
+        $isLi = ($mm[1] === 'li');
+        $wasBold = (bool) preg_match('/<strong|<b\b/i', $inner);
+        $isHeadingTag = (strpos($mm[1], 'h') === 0);
+        $segs = preg_split('/(?=\s*[●•✔☀→▪►]\s)/u', $raw, -1, PREG_SPLIT_NO_EMPTY);
+        if (!$segs) $segs = array($raw);
+        foreach ($segs as $seg) {
+            $seg = trim($seg);
+            if ($seg === '') continue;
+            $hasMarker = (bool) preg_match('/^[●•✔☀→▪►]/u', $seg);
+            if (preg_match_all($GLOBALS['CJ_FIELD_RE'], $seg, $fm, PREG_SET_ORDER)) {
+                foreach ($fm as $x) {
+                    $f = cj_desc_canon($x[1]); $v = trim($x[2]);
+                    if (!$f) continue;
+                    if ($v !== '') $blocks[] = array('type' => 'pyramid', 'field' => $f, 'value' => $v);
+                    else $blocks[] = array('type' => 'heading', 'text' => trim($x[1]), 'canon' => null, 'field' => $f);
+                }
+                $seg = trim(preg_replace($GLOBALS['CJ_FIELD_RE'], ' ', $seg));
+            }
+            $plain = cj_desc_strip_markers($seg);
+            if ($plain === '') continue;
+            if ($isLi || $hasMarker) { $blocks[] = array('type' => 'bullet', 'text' => $plain); continue; }
+            $short = strlen($plain) <= 60;
+            $endsColon = (bool) preg_match('/:\s*$/u', $plain);
+            $canon = cj_desc_heading_canon($plain);
+            if ($short && ($isHeadingTag || $endsColon || $canon !== null)) {
+                $blocks[] = array('type' => 'heading', 'text' => rtrim($plain, " :："), 'canon' => $canon, 'field' => cj_desc_canon($plain));
+                continue;
+            }
+            $blocks[] = array('type' => 'prose', 'html' => esc_html($plain), 'text' => $plain, 'bold' => $wasBold, 'len' => strlen($plain));
+        }
+    }
+    return $blocks;
+}
+
+function cj_desc_render($html) {
+    $pyr = array('familia' => null, 'topo' => null, 'coracao' => null, 'fundo' => null);
+    $blocks = cj_desc_blocks($html);
+    $rest = array(); $pyrAt = null;
+    foreach ($blocks as $b) {
+        if ($b['type'] === 'pyramid') {
+            if ($pyr[$b['field']] === null) $pyr[$b['field']] = $b['value'];
+            if ($pyrAt === null) { $pyrAt = count($rest); $rest[] = array('type' => 'pyramid_out'); }
+            continue;
+        }
+        $rest[] = $b;
+    }
+    $f0 = isset($rest[0]) ? $rest[0] : null;
+    if ($f0 && ($f0['type'] === 'heading' || ($f0['type'] === 'prose' && !empty($f0['bold']) && ($f0['len'] ?? 999) <= 80))) array_shift($rest);
+
+    foreach ($rest as $i => $b) {
+        if ($b['type'] === 'heading' && !empty($b['field']) && $pyr[$b['field']] === null) {
+            for ($j = $i + 1; $j < count($rest); $j++) {
+                if (in_array($rest[$j]['type'], array('bullet', 'prose'), true) && trim($rest[$j]['text']) !== '') {
+                    $pyr[$b['field']] = trim($rest[$j]['text'], " .;:");
+                    $rest[$j]['remove'] = true;
+                    break;
+                }
+                if ($rest[$j]['type'] === 'pyramid_out') break;
+            }
+            $rest[$i]['remove'] = true;
+        }
+    }
+    if ($pyrAt === null && ($pyr['familia'] || $pyr['topo'] || $pyr['coracao'] || $pyr['fundo'])) {
+        $k = 0; while ($k < count($rest) && $rest[$k]['type'] === 'prose') $k++;
+        array_splice($rest, $k, 0, array(array('type' => 'pyramid_out')));
+    }
+
+    $lead = array(); $i = 0;
+    while ($i < count($rest)) {
+        $b = $rest[$i];
+        if ($b['type'] === 'prose') { $lead[] = $b['text']; $i++; continue; }
+        if ($b['type'] === 'heading' && ($b['canon'] ?? null) === 'redundant') { $i++; continue; }
+        break;
+    }
+    $rest = array_slice($rest, $i);
+
+    $renderPyr = function () use ($pyr) {
+        if (!$pyr['familia'] && !$pyr['topo'] && !$pyr['coracao'] && !$pyr['fundo']) return '';
+        $h = '<div class="cj-desc__pyramid">';
+        if ($pyr['familia']) $h .= '<span class="cj-desc__family">' . esc_html($pyr['familia']) . '</span>';
+        $h .= '<dl class="cj-desc__notes">';
+        foreach (array(array('topo', 'Topo'), array('coracao', 'Coração'), array('fundo', 'Fundo')) as $p) {
+            if (!$pyr[$p[0]]) continue;
+            $h .= '<div class="cj-desc__note"><dt>' . $p[1] . '</dt><dd>' . esc_html($pyr[$p[0]]) . '</dd></div>';
+        }
+        return $h . '</dl></div>';
+    };
+
+    $out = '<div class="cj-desc">';
+    if ($lead) $out .= '<p class="cj-desc__lead">' . esc_html(implode(' ', $lead)) . '</p>';
+
+    $cur = null; $items = array(); $paras = array();
+    $flush = function () use (&$out, &$cur, &$items, &$paras) {
+        if (!$items && !$paras) { $cur = null; return; }
+        if ($cur !== null) $out .= '<h3 class="cj-desc__heading">' . esc_html($cur) . '</h3>';
+        if ($items) { $out .= '<ul class="cj-desc__list">'; foreach ($items as $it) $out .= '<li>' . esc_html($it) . '</li>'; $out .= '</ul>'; }
+        foreach ($paras as $pp) $out .= '<p class="cj-desc__p">' . $pp . '</p>';
+        $cur = null; $items = array(); $paras = array();
+    };
+    foreach ($rest as $b) {
+        if (!empty($b['remove'])) continue;
+        if ($b['type'] === 'pyramid_out') { $flush(); $out .= $renderPyr(); }
+        elseif ($b['type'] === 'heading') { if (($b['canon'] ?? null) === 'redundant') { $flush(); continue; } $flush(); $cur = $b['text']; }
+        elseif ($b['type'] === 'bullet') $items[] = $b['text'];
+        elseif ($b['type'] === 'prose') $paras[] = (!empty($b['bold'])) ? '<strong>' . $b['html'] . '</strong>' : $b['html'];
+    }
+    $flush();
+    return $out . '</div>';
+}
+
+// Substitui o callback da aba "Descrição" pela versão formatada
+add_filter('woocommerce_product_tabs', 'castejon_desc_tab', 20);
+function castejon_desc_tab($tabs) {
+    if (isset($tabs['description'])) {
+        $tabs['description']['callback'] = 'castejon_desc_render_tab';
+    }
+    return $tabs;
+}
+function castejon_desc_render_tab($key = 'description', $tab = array()) {
+    global $product;
+    if (empty($product)) return;
+    $heading = apply_filters('woocommerce_product_description_heading', __('Description', 'woocommerce'));
+    echo '<h2>' . esc_html($heading) . '</h2>';
+    echo cj_desc_render(apply_filters('the_content', $product->get_description()));
+}
+
 
