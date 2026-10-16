@@ -441,4 +441,122 @@ function castejon_desc_render_tab($key = 'description', $tab = array()) {
     echo cj_desc_render(apply_filters('the_content', $product->get_description()));
 }
 
+/* ==========================================================================
+   CROSS-SELL decant <-> frasco — pareamento robusto por NOME
+   (o pareamento por slug quebrava; agora casa pela fragrância, com fallback pro slug)
+   ========================================================================== */
+function cj_noaccent($s) {
+    return str_replace(
+        ['á','à','â','ã','ä','é','è','ê','ë','í','ì','î','ï','ó','ò','ô','õ','ö','ú','ù','û','ü','ç','ñ','Á','À','Â','Ã','É','Ê','Í','Ó','Ô','Õ','Ú','Ç'],
+        ['a','a','a','a','a','e','e','e','e','i','i','i','i','o','o','o','o','o','u','u','u','u','c','n','a','a','a','a','e','e','i','o','o','o','u','c'],
+        (string) $s);
+}
+function cj_name_clean($s) { return cj_noaccent(html_entity_decode((string) $s, ENT_QUOTES | ENT_HTML5, 'UTF-8')); }
+function cj_frag_gender($name) {
+    $n = cj_name_clean($name);
+    if (preg_match('/\b(masculin|mascullin|masculino)/i', $n)) return 'm';
+    if (preg_match('/\b(feminin|feminiin|feminino)/i', $n)) return 'f';
+    if (preg_match('/\bunissex\b/i', $n)) return 'u';
+    return '';
+}
+function cj_frag_conc($name) {
+    $n = cj_name_clean($name);
+    if (preg_match('/extrait/i', $n)) return 'extrait';
+    if (preg_match('/parfum concentre/i', $n)) return 'parfum';
+    if (preg_match('/eau de parfum|\bedp\b/i', $n)) return 'parfum';
+    if (preg_match('/eau de toilette|\bedt\b/i', $n)) return 'toilette';
+    if (preg_match('/parfum/i', $n)) return 'parfum';
+    if (preg_match('/toilette/i', $n)) return 'toilette';
+    return '';
+}
+function cj_frag_tokens($name) {
+    $n = cj_name_clean($name);
+    $n = preg_replace('/^\s*(decant\s*[–\-—:]\s*|perfume\s+)/i', '', $n);
+    $n = preg_replace('/\b(masculin\w*|mascullin\w*|feminin\w*|feminiin\w*|unissex)\b.*$/i', '', $n);
+    $n = preg_replace('/\b(eau de parfum|eau de toilette|parfum concentre|extrait|elixir|edp|edt|parfum|toilette)\b.*$/i', '', $n);
+    $n = strtolower($n);
+    $n = preg_replace('/[^a-z0-9 ]/', ' ', $n);
+    $stop = ['decant','perfume','eau','parfum','toilette','concentre','extrait','elixir','edp','edt','masculino','feminino','unissex','the','de','da','do','di','du','la','le','les','and','of'];
+    $t = array_values(array_filter(preg_split('/\s+/', trim($n)), fn($w) => strlen($w) >= 2 && !in_array($w, $stop)));
+    $t = array_values(array_unique($t)); sort($t);
+    return $t;
+}
+function cj_noise_words() {
+    return ['french','avenue','lattafa','maison','alhambra','orientica','armaf','afnan','dior','chanel','herrera','carolina','armani','giorgio','rabanne','paco','versace','mugler','gaultier','lancome','givenchy','prada','montblanc','dolce','gabbana','bvlgari','cacharel','wataniah','rasasi','jean','paul','tommy','hilfiger','paris','yves','saint','laurent','hugo','boss'];
+}
+function cj_pair_score($aT, $bT, $aG, $bG, $aC, $bC) {
+    if ($aG && $bG && $aG !== $bG && $aG !== 'u' && $bG !== 'u') return -1;
+    $aT = array_values(array_unique($aT)); sort($aT);
+    $bT = array_values(array_unique($bT)); sort($bT);
+    $inter = array_intersect($aT, $bT); $n = count($inter);
+    if ($n === 0) return -1;
+    $exact = ($aT === $bT);
+    if (!$exact) {
+        $diff = array_values(array_diff(array_unique(array_merge($aT, $bT)), $inter));
+        $noise = cj_noise_words();
+        foreach ($diff as $w) if (!in_array($w, $noise, true)) return -1;
+    }
+    $score = $n * 10 + ($exact ? 20 : 0);
+    if ($aC && $bC && $aC === $bC) $score += 3;
+    return $score;
+}
+function cj_best_pair($self, $cands) {
+    $sT = cj_frag_tokens($self['name']); $sG = cj_frag_gender($self['name']); $sC = cj_frag_conc($self['name']);
+    $best = null; $bestScore = 0;
+    foreach ($cands as $c) {
+        if ($c['id'] === $self['id']) continue;
+        $sc = cj_pair_score($sT, cj_frag_tokens($c['name']), $sG, cj_frag_gender($c['name']), $sC, cj_frag_conc($c['name']));
+        if ($sc > $bestScore) { $bestScore = $sc; $best = $c; }
+    }
+    return array($best, $bestScore);
+}
+
+/** Mapa product_id => pair_id (transient, reconstruído quando expira) */
+function castejon_pair_map() {
+    $map = get_transient('castejon_pair_map');
+    if (is_array($map)) return $map;
+    $map = array();
+    $ids = get_posts(array('post_type' => 'product', 'posts_per_page' => -1, 'post_status' => 'publish', 'fields' => 'ids', 'no_found_rows' => true));
+    $decs = array(); $pers = array();
+    foreach ($ids as $id) {
+        $p = wc_get_product($id);
+        if (!$p || !$p->is_visible()) continue;
+        $slug = $p->get_slug();
+        $item = array('id' => $id, 'name' => $p->get_name());
+        if (strpos($slug, 'decant-') === 0) $decs[] = $item;
+        elseif (strpos($slug, 'perfume-') === 0) $pers[] = $item;
+    }
+    foreach ($decs as $d) { list($b) = cj_best_pair($d, $pers); if ($b) $map[$d['id']] = $b['id']; }
+    foreach ($pers as $p) { list($b) = cj_best_pair($p, $decs); if ($b) $map[$p['id']] = $b['id']; }
+    set_transient('castejon_pair_map', $map, 12 * HOUR_IN_SECONDS);
+    return $map;
+}
+
+/** Devolve o produto par (decant <-> frasco) ou null */
+function castejon_get_pair_product($product) {
+    if (empty($product)) return null;
+    $id = $product->get_id();
+    $map = castejon_pair_map();
+    if (!empty($map[$id])) {
+        $p = wc_get_product($map[$id]);
+        if ($p && $p->is_visible()) return $p;
+    }
+    // fallback: pareamento por slug (comportamento antigo)
+    $slug = $product->get_slug();
+    $pair_slug = '';
+    if (strpos($slug, 'perfume-') === 0) $pair_slug = 'decant-' . substr($slug, strlen('perfume-'));
+    elseif (strpos($slug, 'decant-') === 0) $pair_slug = 'perfume-' . substr($slug, strlen('decant-'));
+    if ($pair_slug) {
+        $post = get_page_by_path($pair_slug, OBJECT, 'product');
+        if ($post) { $p = wc_get_product($post->ID); if ($p && $p->is_visible()) return $p; }
+    }
+    return null;
+}
+
+// invalida o mapa quando um produto é salvo/excluído
+add_action('save_post_product', function () { delete_transient('castejon_pair_map'); });
+add_action('deleted_post', function () { delete_transient('castejon_pair_map'); });
+add_action('edited_term', function () { delete_transient('castejon_pair_map'); });
+
+
 

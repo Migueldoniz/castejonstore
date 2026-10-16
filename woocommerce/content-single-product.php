@@ -125,20 +125,10 @@ $is_decant = has_term('decants-2', 'product_cat', $product_id) || has_term('deca
                 <?php endif; ?>
 
                 <?php
-                // Cross-sell decant <-> frasco (par por fragrância)
-                $cj_pair_slug = '';
-                $cj_pair_direction = '';
-                if (strpos($product->get_slug(), 'perfume-') === 0) {
-                    $cj_pair_slug = 'decant-' . substr($product->get_slug(), strlen('perfume-'));
-                    $cj_pair_direction = 'to_decant';
-                } elseif (strpos($product->get_slug(), 'decant-') === 0) {
-                    $cj_pair_slug = 'perfume-' . substr($product->get_slug(), strlen('decant-'));
-                    $cj_pair_direction = 'to_perfume';
-                }
-                $cj_pair_post = $cj_pair_slug ? get_page_by_path($cj_pair_slug, OBJECT, 'product') : null;
-                if (!empty($cj_pair_post)) {
-                    $cj_pair_product = wc_get_product($cj_pair_post->ID);
-                    if ($cj_pair_product && $cj_pair_product->is_visible()) :
+                // Cross-sell decant <-> frasco (pareamento robusto por nome, com fallback pro slug)
+                $cj_pair_direction = $is_decant ? 'to_perfume' : 'to_decant';
+                $cj_pair_product = castejon_get_pair_product($product);
+                if ($cj_pair_product) :
                 ?>
                     <div class="cj-pair-box">
                         <div class="cj-pair-info">
@@ -151,8 +141,7 @@ $is_decant = has_term('decants-2', 'product_cat', $product_id) || has_term('deca
                         </a>
                     </div>
                 <?php
-                    endif;
-                }
+                endif;
                 ?>
 
                 <!-- Selos de Confiança e Garantia (Estilo The Gregs) -->
