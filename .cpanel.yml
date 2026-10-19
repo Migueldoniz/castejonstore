@@ -1,6 +1,7 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/caste3874526/staging.castejonstore.com.br/wp-content/themes/castejon-theme/
+    # PRODUÇÃO (branch `production`) — deploy do tema em public_html
+    - export DEPLOYPATH=/home/caste3874526/public_html/wp-content/themes/castejon-theme/
     - /bin/mkdir -p $DEPLOYPATH
     - /bin/cp -R * $DEPLOYPATH
