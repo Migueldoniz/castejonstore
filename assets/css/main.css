@@ -6154,3 +6154,11 @@ html.js-enabled .is-revealed {
     height: 8px !important;
   }
 }
+
+/* 5) Cards de categoria: todos com o MESMO tamanho compacto no mobile */
+@media (max-width: 576px) {
+  .cj-category-card {
+    height: 200px !important;
+    aspect-ratio: auto !important;
+  }
+}
