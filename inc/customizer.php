@@ -213,7 +213,7 @@ function castejon_customize_register($wp_customize) {
 
     // WhatsApp
     $wp_customize->add_setting('castejon_whatsapp_number', array(
-        'default'           => '',
+        'default'           => '5516993734487',
         'sanitize_callback' => 'sanitize_text_field',
     ));
     $wp_customize->add_control('castejon_whatsapp_number', array(
@@ -225,7 +225,7 @@ function castejon_customize_register($wp_customize) {
 
     // Instagram
     $wp_customize->add_setting('castejon_instagram_url', array(
-        'default'           => '',
+        'default'           => 'https://instagram.com/castejon_store',
         'sanitize_callback' => 'esc_url_raw',
     ));
     $wp_customize->add_control('castejon_instagram_url', array(
@@ -236,7 +236,7 @@ function castejon_customize_register($wp_customize) {
 
     // Facebook
     $wp_customize->add_setting('castejon_facebook_url', array(
-        'default'           => '',
+        'default'           => 'https://www.facebook.com/castejonstoree',
         'sanitize_callback' => 'esc_url_raw',
     ));
     $wp_customize->add_control('castejon_facebook_url', array(

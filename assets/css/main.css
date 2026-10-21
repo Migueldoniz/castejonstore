@@ -6066,3 +6066,91 @@ html.js-enabled .is-revealed {
 .woocommerce-cart .cart-collaterals .cart_totals {
   width: 100%;
 }
+
+/* ==========================================================================
+   AJUSTES MOBILE / IDENTIDADE (2026-10-21)
+   ========================================================================== */
+
+/* 1) Logo maior (compensando o padding do header pra ele não crescer muito) */
+@media (min-width: 769px) {
+  .cj-header-top {
+    padding: 11px 0;
+  }
+  .cj-header-logo img,
+  .custom-logo,
+  .cj-logo-img {
+    height: 80px !important;
+    max-height: 80px !important;
+    max-width: 260px !important;
+  }
+}
+@media (max-width: 768px) {
+  .cj-header-logo img,
+  .custom-logo,
+  .cj-logo-img {
+    height: 66px !important;
+    max-height: 66px !important;
+    max-width: 210px !important;
+  }
+}
+@media (max-width: 575px) {
+  .cj-header-logo img,
+  .custom-logo,
+  .cj-logo-img {
+    height: 58px !important;
+    max-height: 58px !important;
+    max-width: 200px !important;
+  }
+}
+
+/* 2) Benefícios no mobile: coluna única (sem slider horizontal) */
+@media (max-width: 575px) {
+  .cj-benefits-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    overflow: visible !important;
+    scroll-snap-type: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .cj-benefit-box {
+    flex: initial !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    scroll-snap-align: none !important;
+    padding: 12px 16px !important;
+    border: 1px solid #ebebeb !important;
+    border-radius: 10px !important;
+  }
+}
+
+/* 3) Cabeçalho da seção: no mobile o texto ocupa tudo e o botão vem abaixo à direita */
+@media (max-width: 767px) {
+  .cj-section-header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 14px !important;
+  }
+  .cj-section-title-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .cj-section-link {
+    align-self: flex-end !important;
+  }
+}
+
+/* 4) Tarja do card ("100% Autêntico" / "Decant Original") menor no mobile (~2px) */
+@media (max-width: 767px) {
+  .cj-card-badge {
+    font-size: 0.5rem !important;
+    padding: 2px 6px !important;
+  }
+  .cj-card-badge svg {
+    width: 8px !important;
+    height: 8px !important;
+  }
+}
