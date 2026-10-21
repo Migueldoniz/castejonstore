@@ -6071,35 +6071,35 @@ html.js-enabled .is-revealed {
    AJUSTES MOBILE / IDENTIDADE (2026-10-21)
    ========================================================================== */
 
-/* 1) Logo maior (compensando o padding do header pra ele não crescer muito) */
+/* 1) Logo maior — desktop 120px / mobile 100px */
 @media (min-width: 769px) {
   .cj-header-top {
-    padding: 11px 0;
+    padding: 6px 0;
   }
   .cj-header-logo img,
   .custom-logo,
   .cj-logo-img {
-    height: 80px !important;
-    max-height: 80px !important;
-    max-width: 260px !important;
+    height: 120px !important;
+    max-height: 120px !important;
+    max-width: 420px !important;
   }
 }
 @media (max-width: 768px) {
   .cj-header-logo img,
   .custom-logo,
   .cj-logo-img {
-    height: 66px !important;
-    max-height: 66px !important;
-    max-width: 210px !important;
+    height: 100px !important;
+    max-height: 100px !important;
+    max-width: 340px !important;
   }
 }
-@media (max-width: 575px) {
+@media (max-width: 420px) {
   .cj-header-logo img,
   .custom-logo,
   .cj-logo-img {
-    height: 58px !important;
-    max-height: 58px !important;
-    max-width: 200px !important;
+    height: 100px !important;
+    max-height: 100px !important;
+    max-width: 280px !important;
   }
 }
 
