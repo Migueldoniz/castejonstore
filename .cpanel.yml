@@ -1,13 +1,13 @@
 ---
 deployment:
-  # Deploy por BRANCH (arquivo idêntico em staging e production — nunca conflita no merge).
-  # O destino é escolhido pela branch atual e validado; se não reconhecer, ABORTA sem copiar.
+  # Deploy por BRANCH (arquivo IDENTICO em staging e production - nunca conflita no merge).
+  # O destino e escolhido pela branch atual e validado; se nao reconhecer, ABORTA sem copiar.
   tasks:
     - export BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-    - if [ "$BRANCH" = "production" ]; then export DEPLOYPATH=/home/caste3874526/public_html/wp-content/themes/castejon-theme/; elif [ "$BRANCH" = "staging" ]; then export DEPLOYPATH=/home/caste3874526/staging.castejonstore.com.br/wp-content/themes/castejon-theme/; else echo "ERRO: branch '$BRANCH' sem mapeamento de deploy. Abortando."; exit 1; fi
-    - test -n "$DEPLOYPATH" || { echo "ERRO: DEPLOYPATH vazio. Abortando."; exit 1; }
-    - test -d "$DEPLOYPATH" || { echo "ERRO: destino inexistente ($DEPLOYPATH). Abortando."; exit 1; }
-    - test -f "$DEPLOYPATH/style.css" || { echo "ERRO: $DEPLOYPATH nao parece ser o tema. Abortando."; exit 1; }
+    - if [ "$BRANCH" = "production" ]; then export DEPLOYPATH=/home/caste3874526/public_html/wp-content/themes/castejon-theme/; elif [ "$BRANCH" = "staging" ]; then export DEPLOYPATH=/home/caste3874526/staging.castejonstore.com.br/wp-content/themes/castejon-theme/; else echo "ERRO - branch $BRANCH sem mapeamento de deploy. Abortando."; exit 1; fi
+    - test -n "$DEPLOYPATH" || { echo "ERRO - DEPLOYPATH vazio. Abortando."; exit 1; }
+    - test -d "$DEPLOYPATH" || { echo "ERRO - destino inexistente ($DEPLOYPATH). Abortando."; exit 1; }
+    - test -f "$DEPLOYPATH/style.css" || { echo "ERRO - $DEPLOYPATH nao parece ser o tema. Abortando."; exit 1; }
     - /bin/mkdir -p "$DEPLOYPATH"
     - /bin/cp -R * "$DEPLOYPATH"
-    - echo "Deploy OK: branch '$BRANCH' -> $DEPLOYPATH"
+    - echo "Deploy OK - branch $BRANCH -> $DEPLOYPATH"
