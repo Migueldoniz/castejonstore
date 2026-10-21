@@ -43,7 +43,7 @@ if (!defined('ABSPATH')) {
                     <a href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>">Minha Conta</a>
                     <a href="<?php echo esc_url(wc_get_cart_url()); ?>">Carrinho</a>
                     <?php 
-                    $wa_num = get_theme_mod('castejon_whatsapp_number', '');
+                    $wa_num = get_theme_mod('castejon_whatsapp_number', '5516993734487');
                     $clean_wa = preg_replace('/[^0-9]/', '', $wa_num);
                     if (!empty($clean_wa)) : ?>
                         <a href="<?php echo esc_url('https://wa.me/' . $clean_wa); ?>" target="_blank" rel="noopener noreferrer">WhatsApp de Suporte</a>
@@ -60,8 +60,8 @@ if (!defined('ABSPATH')) {
                 <h4 class="cj-footer-title">Redes & Contato</h4>
                 <div class="cj-footer-social">
                     <?php 
-                    $insta_url = get_theme_mod('castejon_instagram_url', 'https://instagram.com/castejonstore');
-                    $fb_url = get_theme_mod('castejon_facebook_url', 'https://facebook.com/castejonstore');
+                    $insta_url = get_theme_mod('castejon_instagram_url', 'https://instagram.com/castejon_store');
+                    $fb_url = get_theme_mod('castejon_facebook_url', 'https://www.facebook.com/castejonstoree');
                     $email_contact = get_theme_mod('castejon_contact_email', 'contato@castejonstore.com');
                     ?>
                     <a href="<?php echo esc_url($insta_url); ?>" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
