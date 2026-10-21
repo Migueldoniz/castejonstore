@@ -31,7 +31,6 @@ if (!defined('ABSPATH')) {
                     <a href="<?php echo esc_url(home_url('/categoria-produto/perfumes/')); ?>">Perfumes</a>
                     <a href="<?php echo esc_url(home_url('/categoria-produto/decants-2/')); ?>">Decants</a>
                     <a href="<?php echo esc_url(home_url('/categoria-produto/kits/')); ?>">Kits</a>
-                    <a href="<?php echo esc_url(home_url('/categoria-produto/cosmeticos/')); ?>">Cosméticos</a>
                     <a href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>">Loja Completa</a>
                 </div>
             </div>
