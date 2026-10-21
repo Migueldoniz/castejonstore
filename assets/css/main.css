@@ -6088,18 +6088,18 @@ html.js-enabled .is-revealed {
   .cj-header-logo img,
   .custom-logo,
   .cj-logo-img {
-    height: 100px !important;
-    max-height: 100px !important;
-    max-width: 340px !important;
+    height: 90px !important;
+    max-height: 90px !important;
+    max-width: 310px !important;
   }
 }
 @media (max-width: 420px) {
   .cj-header-logo img,
   .custom-logo,
   .cj-logo-img {
-    height: 100px !important;
-    max-height: 100px !important;
-    max-width: 280px !important;
+    height: 90px !important;
+    max-height: 90px !important;
+    max-width: 270px !important;
   }
 }
 
