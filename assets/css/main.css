@@ -6085,6 +6085,9 @@ html.js-enabled .is-revealed {
   }
 }
 @media (max-width: 768px) {
+  .cj-header-top {
+    padding: 0 !important;
+  }
   .cj-header-logo img,
   .custom-logo,
   .cj-logo-img {
